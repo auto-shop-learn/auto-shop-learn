@@ -54,7 +54,7 @@ const Users = () => {
 
   const getStatusCellStyle = (status) => {
     if (status === "active") {
-      return "bg-green-200 text-green-700 rounded-full"
+      return "bg-blue-200 text-blue-700 rounded-full"
     } else if (status === "inactive") {
       return "bg-red-200 text-red-700 rounded-full"
     }
@@ -65,8 +65,8 @@ const Users = () => {
     <div className="flex">
       <div className="container mx-auto py-4">
         <h1 className="text-2xl font-semibold mb-4 flex items-center">
-          Team Members
-          <span className="bg-green-200 text-green-700 px-1 py-1 ml-2 rounded-full text-sm">
+          Learners enrolled
+          <span className="bg-blue-200 text-blue-700 px-1 py-1 ml-2 rounded-full text-sm">
             {userCount} users
           </span>
         </h1>
@@ -83,10 +83,10 @@ const Users = () => {
                 </th>
                 <th className="p-2 border border-gray-300">Name</th>
                 <th className="p-2 border border-gray-300">Role</th>
-                <th className="p-2 border border-gray-300">Status</th>
                 <th className="p-2 border border-gray-300">Email</th>
-                <th className="p-2 border border-gray-300">Teams</th>
+                <th className="p-2 border border-gray-300">Department</th>
                 <th className="p-2 border border-gray-300">Actions</th>
+
               </tr>
             </thead>
             <tbody>
@@ -99,17 +99,12 @@ const Users = () => {
                       checked={user.isSelected}
                     />
                   </td>
-                  <td className="p-2 border border-gray-300">{user.Name}</td>
-                  <td className="p-2 border border-gray-300">{user.Role}</td>
-                  <td
-                    className={`p-2 border border-gray-300 ${getStatusCellStyle(
-                      user.Status
-                    )}`}
-                  >
-                    {user.Status}
-                  </td>
-                  <td className="p-2 border border-gray-300">{user.Email}</td>
-                  <td className="p-2 border border-gray-300">{user.Teams}</td>
+                  <td className="p-2 border border-gray-300">{user.name}</td>
+                  <td className="p-2 border border-gray-300">{user.role}</td>
+
+                  <td className="p-2 border border-gray-300">{user.email}</td>
+                  <td className="p-2 border border-gray-300">{user.department}</td>
+
                   <td className="p-2 border border-gray-300">
                     <div onClick={() => deleteUser(animal.id)}>
                       <DeleteIcon fill="#ffffff" width="20px" height="20px" />

@@ -8,7 +8,7 @@ import {
   updateProfile,
 } from "firebase/auth"
 import { setDoc, doc, serverTimestamp } from "firebase/firestore"
-import { db } from "../firebase.config"
+import { db } from "../config/firebase";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg"
 
 function SignUp() {
@@ -18,6 +18,8 @@ function SignUp() {
     name: "",
     email: "",
     password: "",
+    role: "",
+    department: "",
   })
 
   const navigate = useNavigate()
@@ -46,7 +48,9 @@ function SignUp() {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         email,
-        password
+        password,
+        role,
+        department
       )
 
       const user = userCredential.user
@@ -55,10 +59,14 @@ function SignUp() {
         displayName: name,
       })
 
-      const formDataCopy = { ...formData }
-      delete formDataCopy.password
-      delete formDataCopy.confirmPassword // Remove confirm password before saving
-      formDataCopy.timestamp = serverTimestamp()
+      const formDataCopy = {
+        ...formData,
+        userId: user.uid, // ✅ Add this line
+        timestamp: serverTimestamp(),
+      }
+      // delete formDataCopy.password
+      // delete formDataCopy.confirmPassword
+      
 
       await setDoc(doc(db, "users", user.uid), formDataCopy)
 
@@ -75,17 +83,17 @@ function SignUp() {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center bg-green-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen flex items-center justify-center bg-blue-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="text-center text-3xl font-extrabold text-green-900">
-              Sign Up for Smart Farm
+            <h2 className="text-center text-3xl font-extrabold text-blue-900">
+              Sign Up for Auto Shop Learn
             </h2>
           </div>
           <form className="mt-4 space-y-6" onSubmit={onSubmit}>
             <label
               htmlFor="name"
-              className="text-sm text-left font-medium text-green-900 py-1"
+              className="text-sm text-left font-medium text-blue-900 py-1"
             >
               Name
             </label>
@@ -95,14 +103,14 @@ function SignUp() {
               name="name"
               autoComplete="name"
               required
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-green-900 rounded-t-md focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-blue-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder=""
               value={name}
               onChange={onChange}
             />
             <label
               htmlFor="email"
-              className="text-sm text-left font-medium text-green-900 py-1"
+              className="text-sm text-left font-medium text-blue-900 py-1"
             >
               Email
             </label>
@@ -112,14 +120,14 @@ function SignUp() {
               name="email"
               autoComplete="email"
               required
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-green-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder=""
               value={email}
               onChange={onChange}
             />
             <label
               htmlFor="password"
-              className="text-sm text-left font-medium text-green-900 py-1"
+              className="text-sm text-left font-medium text-blue-900 py-1"
             >
               Password
             </label>
@@ -130,7 +138,7 @@ function SignUp() {
                 name="password"
                 autoComplete="new-password"
                 required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border text-green-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+                className="appearance-none rounded-none relative block w-full px-3 py-2 border text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                 placeholder=""
                 value={password}
                 onChange={onChange}
@@ -140,7 +148,7 @@ function SignUp() {
                   src={visibilityIcon}
                   alt="Show password"
                   className={`${
-                    showPassword ? "text-green-600" : "text-green-400"
+                    showPassword ? "text-blue-600" : "text-blue-400"
                   } cursor-pointer`}
                   onClick={() => setShowPassword((prevState) => !prevState)}
                 />
@@ -148,7 +156,7 @@ function SignUp() {
             </div>
             <label
               htmlFor="confirmPassword"
-              className="text-sm text-left font-medium text-green-900 py-1"
+              className="text-sm text-left font-medium text-blue-900 py-1"
             >
               Confirm Password
             </label>
@@ -158,15 +166,75 @@ function SignUp() {
               name="confirmPassword"
               autoComplete="new-password"
               required
-              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-green-900 focus:outline-none focus:ring-green-500 focus:border-green-500 focus:z-10 sm:text-sm"
+              className="appearance-none rounded-none relative block w-full px-3 py-2 border text-blue-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder=""
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
 
+            <div className="mt-4">
+              <p className="text-sm font-medium text-blue-900 mb-2">
+                Select Role
+              </p>
+              <div className="flex space-x-4">
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="Educator"
+                    checked={formData.role === "Educator"}
+                    onChange={onChange}
+                    className="form-radio text-blue-600 focus:ring-blue-500"
+                    id="role"
+                  />
+                  <span className="ml-2 text-blue-900">Educator</span>
+                </label>
+                <label className="inline-flex items-center">
+                  <input
+                    type="radio"
+                    name="role"
+                    value="Employee"
+                    checked={formData.role === "Employee"}
+                    onChange={onChange}
+                    className="form-radio text-blue-600 focus:ring-blue-500"
+                    id="role"
+                  />
+                  <span className="ml-2 text-blue-900">Employee</span>
+                </label>
+              </div>
+
+              <label
+                htmlFor="department"
+                className="block text-sm font-medium text-blue-900 mb-2"
+              >
+                Select Department
+              </label>
+              <select
+                id="department"
+                name="department"
+                value={formData.department}
+                onChange={onChange}
+                required
+                className="block w-full px-3 py-2 border border-blue-300 bg-white text-blue-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                <option value="" disabled>
+                  -- Select a department --
+                </option>
+                <option value="Sales">Sales</option>
+                <option value="Compliance and Safety">
+                  Compliance and Safety
+                </option>
+                <option value="Procurement">Procurement</option>
+                <option value="Product Management">Product Management</option>
+                <option value="Warehouse & Logistics">
+                  Warehouse & Logistics
+                </option>
+              </select>
+            </div>
+
             <Link
               to="/forgot-password"
-              className="text-green-600 hover:text-green-500"
+              className="text-blue-600 hover:text-blue-500"
             >
               Forgot Password
             </Link>
@@ -175,15 +243,13 @@ function SignUp() {
               acknowledge our privacy policy
             </h4>
 
-              {password !== confirmPassword && (
-                <div className="text-red-600 text-sm">
-                  Passwords do not match
-                </div>
-              )}
+            {password !== confirmPassword && (
+              <div className="text-red-600 text-sm">Passwords do not match</div>
+            )}
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Continue
               </button>
@@ -195,7 +261,7 @@ function SignUp() {
           <div className="text-center text-sm">
             <Link
               to="/sign-in"
-              className="font-medium text-green-600 hover:text-green-500"
+              className="font-medium text-blue-600 hover:text-blue-500"
             >
               Sign In instead
             </Link>

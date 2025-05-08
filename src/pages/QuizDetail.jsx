@@ -1,6 +1,6 @@
 import React from 'react'
 
-const UpdateCrop = () => {
+const QuizDetail = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const UpdateCrop = () => {
   )
 }
 
-export default UpdateCrop
+export default QuizDetail

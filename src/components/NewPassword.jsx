@@ -38,7 +38,7 @@ const NewPassword = () => {
     <BackButton></BackButton>
 
       <div className="container mx-auto py-4 ml-14">
-        <h1 className="text-3xl text-green text-center font-semibold mb-4">
+        <h1 className="text-3xl text-blue text-center font-semibold mb-4">
           Change your password
         </h1>
         <div className="flex flex-col">
@@ -86,7 +86,7 @@ const NewPassword = () => {
           )}
         </div>
         <button
-          className="bg-green-700 text-white py-2 px-4 ml-12 rounded hover:bg-green-600"
+          className="bg-blue-700 text-white py-2 px-4 ml-12 rounded hover:bg-blue-600"
           onClick={handleUpdatePassword}
         >
           Update

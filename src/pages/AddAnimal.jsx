@@ -128,6 +128,8 @@ const AddAnimal = () => {
         <Sidebar />
         {/* <Auth /> */}
         <div>
+          <div className="ml-10 mt-10">
+
         <div className="mb-2">
             <input
               className="p-2 border border-gray-300 rounded"
@@ -231,12 +233,13 @@ const AddAnimal = () => {
             />
           </div> */}
           <button
-            className="p-2 bg-green-700 text-white rounded hover-bg-green-800"
+            className="p-2 bg-blue-700 text-white rounded hover-bg-blue-800"
             onClick={onSubmitAnimal}
           >
             Add Animal
           </button>
         </div>
+          </div>
       </div>
     </>
   )

@@ -1,0 +1,47 @@
+
+Add reCAPTCHA to your website
+Add reCAPTCHA to your forms and actions you want to protect.
+method1
+//on user interaction
+//1. Load the JavaScript API with your key.
+<head>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lew-DErAAAAAD49LtQEd4mn-LfnJREA7eR32RR2"></script>
+    <!-- Your code -->
+  </head>
+
+//2. Call grecaptcha.execute for each action you want to protect.
+  <script>
+    function onClick(e) {
+      e.preventDefault();
+      grecaptcha.enterprise.ready(async () => {
+        const token = await grecaptcha.enterprise.execute('6Lew-DErAAAAAD49LtQEd4mn-LfnJREA7eR32RR2', {action: 'LOGIN'});
+      });
+    }
+  </script>
+Send the response token to your application backend. The response token expires after two minutes.
+
+method2
+//on an html button
+//1. Load the JavaScript API with your key.
+<head>
+    <script src="https://www.google.com/recaptcha/enterprise.js?render=6Lew-DErAAAAAD49LtQEd4mn-LfnJREA7eR32RR2"></script>
+    <!-- Your code -->
+  </head>
+
+//2. Use a callback function to handle the response token.
+  <!-- Replace the variables below. -->
+<script>
+    function onSubmit(token) {
+      document.getElementById("demo-form").submit();
+    }
+  </script>
+
+//3. Add attributes to your HTML button:
+<button class="g-recaptcha"
+    data-sitekey="6Lew-DErAAAAAD49LtQEd4mn-LfnJREA7eR32RR2"
+    data-callback='onSubmit'
+    data-action='submit'>
+  Submit
+</button>
+Send the response token to your application backend. The response token expires after two minutes. Get the response token from the g-recaptcha-response POST parameter when the user submits the form on your site.
+

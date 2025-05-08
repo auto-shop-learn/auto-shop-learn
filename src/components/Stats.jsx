@@ -39,12 +39,12 @@ const Stats = () => {
         <h3 className="text-lg font-semibold">Livestock count</h3>
         <p className="text-3xl font-bold">{livestockCount}</p>
       </div>
-      <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-green-200">
-        <h3 className="text-lg font-semibold">Crop count</h3>
+      <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-blue-200">
+        <h3 className="text-lg font-semibold">Total number of Quizzes</h3>
         <p className="text-3xl font-bold">{cropCount}</p>
       </div>
       <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-yellow-200 mb-0.5">
-        <h3 className="text-lg font-semibold">Inventory count</h3>
+        <h3 className="text-lg font-semibold">Video count</h3>
         <p className="text-3xl font-bold">{inventoryCount}</p>
       </div>
       <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-blue-200 mt-0.5">

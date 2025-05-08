@@ -8,13 +8,13 @@ const RightBar = () => {
 
         <div className="flex space-x-4 mb-4">
           <Link to="/sign-in">
-            <button className="bg-green-700 hover:bg-green-700 text-white py-2 px-4 rounded">
+            <button className="bg-blue-700 hover:bg-blue-700 text-white py-2 px-4 rounded">
               Log In
             </button>
           </Link>
 
           <Link to="/sign-up">
-            <button className="bg-green-700 hover:bg-green-700 text-white py-2 px-4 rounded">
+            <button className="bg-blue-700 hover:bg-blue-700 text-white py-2 px-4 rounded">
               Sign Up
             </button>
           </Link>

@@ -1,3 +1,4 @@
+import backgroundImage from "../assets/images/machine.jpg"; // <-- import your sidebar background image
 import SettingsIcon from "../assets/svg/settingsIcon.svg?react";
 import DashboardIcon from "../assets/svg/dashboardIcon.svg?react";
 import AnimalIcon from "../assets/svg/animalIcon.svg?react";
@@ -8,6 +9,7 @@ import { Link, useLocation } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
+
 
 const Sidebar = () => {
   const location = useLocation();
@@ -22,11 +24,14 @@ const Sidebar = () => {
     }
   };
 
-  const linkClass = "bg-green-700 text-white flex items-center space-x-2 rounded hover:bg-gray-700 p-2";
+  const linkClass = "bg-blue-700 text-white flex items-center space-x-2 rounded hover:bg-gray-700 p-2";
   const defaultClass = "flex items-center space-x-2 rounded hover:bg-gray-700 p-2";
 
   return (
-    <div className="sidebar bg-black w-1/5 h-screen text-white p-4 flex flex-col justify-between">
+    <div
+      className="sidebar w-1/5 h-screen text-white p-4 flex flex-col justify-between bg-cover bg-center"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
       <ul>
         <li className="mb-4">
           <Link
@@ -43,7 +48,7 @@ const Sidebar = () => {
             className={location.pathname === "/animals" ? linkClass : defaultClass}
           >
             <AnimalIcon fill="#ffffff" width="20px" height="20px" />
-            <span className="ml-2">Animals</span>
+            <span className="ml-2">Grades</span>
           </Link>
         </li>
         <li className="mb-4">
@@ -52,7 +57,7 @@ const Sidebar = () => {
             className={location.pathname === "/crops" ? linkClass : defaultClass}
           >
             <CropIcon fill="#ffffff" width="20px" height="20px" />
-            <span className="ml-2">Crops</span>
+            <span className="ml-2">Quizzes</span>
           </Link>
         </li>
         <li className="mb-4">
@@ -61,7 +66,7 @@ const Sidebar = () => {
             className={location.pathname === "/inventory" ? linkClass : defaultClass}
           >
             <InventoryIcon fill="#ffffff" width="20px" height="20px" />
-            <span className="ml-2">Inventory</span>
+            <span className="ml-2">Videos</span>
           </Link>
         </li>
         <li className="mb-4">

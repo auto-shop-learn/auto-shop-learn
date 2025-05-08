@@ -1,19 +1,27 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+// // Import the functions you need from the SDKs you need
+// import { initializeApp, getApps } from "firebase/app";
+// import { getAuth, GoogleAuthProvider } from "firebase/auth";
+// import { getFirestore } from "firebase/firestore";
+// import { getStorage } from "firebase/storage";
+// // TODO: Add SDKs for Firebase products that you want to use
+// // https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyA7cI0cbWP7HN1zu1ALm76g7EC79h7oa3k",
-    authDomain: "fir-course-31ca9.firebaseapp.com",
-    projectId: "fir-course-31ca9",
-    storageBucket: "fir-course-31ca9.appspot.com",
-    messagingSenderId: "1088498704402",
-    appId: "1:1088498704402:web:f64d8ea87691f57c2678cb"
-};
+// // Your web app's Firebase configuration
+// const firebaseConfig = {
+//   apiKey: "AIzaSyBA4vuM9FF4hFoB6jn1yEjxZ8lj5KDg2tc",
+//   authDomain: "smart-autoshop.firebaseapp.com",
+//   projectId: "smart-autoshop",
+//   storageBucket: "smart-autoshop.appspot.com", // ✅ corrected
+//   messagingSenderId: "42197520080",
+//   appId: "1:42197520080:web:71df2423da5bf4fc9798d5"
+// };
 
-// Initialize Firebase
-initializeApp(firebaseConfig);
-export const db = getFirestore();
+// // Initialize Firebase
+// const app = initializeApp(firebaseConfig); // ✅ store in a variable
+
+// // Export Firestore and Storage
+// export const db = getFirestore(app);
+// export const auth = getAuth(app);
+// export const googleProvider = new GoogleAuthProvider();
+// export const storage = getStorage(app);
+

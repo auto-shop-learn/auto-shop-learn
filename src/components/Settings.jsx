@@ -34,12 +34,12 @@ const Settings = () => {
       <div className="flex">
         <Sidebar />
         <div className="container mx-auto py-4">
-          <div className="text-green-500 text-xl font-semibold mb-2">Settings</div>
+          <div className="text-blue-500 text-xl font-semibold mb-2">Settings</div>
           <div className="flex items-center space-x-10">
             <Link
               to="/settings/profile"
               className={`${
-                location.pathname === "/settings/profile" ? "text-green-500" : "text-black"
+                location.pathname === "/settings/profile" ? "text-blue-500" : "text-black"
               }`}
               onClick={() => setActiveComponent("profile")}
             >
@@ -48,7 +48,7 @@ const Settings = () => {
             <Link
               to="/settings/new-password"
               className={`${
-                location.pathname === "/settings/new-password" ? "text-green-500" : "text-black"
+                location.pathname === "/settings/new-password" ? "text-blue-500" : "text-black"
               }`}
               onClick={() => setActiveComponent("new-password")}
             >
@@ -57,7 +57,7 @@ const Settings = () => {
             <Link
               to="/settings/team"
               className={`${
-                location.pathname === "/settings/team" ? "text-green-500" : "text-black"
+                location.pathname === "/settings/team" ? "text-blue-500" : "text-black"
               }`}
               onClick={() => setActiveComponent("team")}
             >
@@ -66,7 +66,7 @@ const Settings = () => {
             <Link
               to="/settings/info"
               className={`${
-                location.pathname === "/settings/info" ? "text-green-500" : "text-black"
+                location.pathname === "/settings/info" ? "text-blue-500" : "text-black"
               }`}
               onClick={() => setActiveComponent("info")}
             >
