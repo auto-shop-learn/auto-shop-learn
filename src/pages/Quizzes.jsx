@@ -11,19 +11,21 @@ import {
 } from "firebase/firestore"
 import DeleteIcon from "../assets/svg/deleteIcon.svg?react"
 import EditIcon from "../assets/svg/editIcon.svg?react"
-// import Logo from "../assets/svg/logo.svg"
 import Logo from "../assets/images/logo2.png"
 import { Link, useNavigate } from "react-router-dom"
-import { v4 as uuidv4 } from "uuid" // Import to generate random quizId
+import { v4 as uuidv4 } from "uuid"
 
 const Quizzes = () => {
   const navigate = useNavigate()
 
   const [quizList, setQuizList] = useState([])
   const [selectedQuiz, setSelectedQuiz] = useState(null)
+  const [showAddQuizModal, setShowAddQuizModal] = useState(false)
 
   const [newQuizTitle, setNewQuizTitle] = useState("")
   const [newNumQuestions, setNewNumQuestions] = useState("")
+  const [newDifficulty, setNewDifficulty] = useState("Medium")
+  const [newCategory, setNewCategory] = useState("General")
 
   const [updatedDifficulty, setUpdatedDifficulty] = useState("")
   const [updatedNumQuestions, setUpdatedNumQuestions] = useState("")
@@ -49,18 +51,27 @@ const Quizzes = () => {
   }, [])
 
   const onSubmitQuiz = async () => {
+    if (!newQuizTitle || !newNumQuestions) {
+      alert("Please fill in all fields")
+      return
+    }
+
     try {
       await addDoc(quizzesCollectionRef, {
         title: newQuizTitle,
         numQuestions: newNumQuestions,
+        difficulty: newDifficulty,
+        category: newCategory,
         userId: auth?.currentUser?.uid,
         quizId: uuidv4(),
-        difficulty: "Medium",
-        category: "General",
         status: "Draft",
         quizType: "Multiple Choice",
+        createdAt: new Date().toISOString()
       })
       getQuizList()
+      setNewQuizTitle("")
+      setNewNumQuestions("")
+      setShowAddQuizModal(false)
     } catch (error) {
       console.error(error)
     }
@@ -94,11 +105,83 @@ const Quizzes = () => {
           <div className="flex items-center space-x-4 mb-4">
             <button
               className="p-2 bg-blue-700 text-white rounded hover:bg-blue-800"
-              onClick={onSubmitQuiz}
+              onClick={() => setShowAddQuizModal(true)}
             >
               + Add Quiz
             </button>
           </div>
+
+          {/* Add Quiz Modal */}
+          {showAddQuizModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-xl font-bold mb-4">Create New Quiz</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block mb-1 font-medium">Quiz Title</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded"
+                      value={newQuizTitle}
+                      onChange={(e) => setNewQuizTitle(e.target.value)}
+                      placeholder="Enter quiz title"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 font-medium">Number of Questions</label>
+                    <input
+                      type="number"
+                      className="w-full p-2 border border-gray-300 rounded"
+                      value={newNumQuestions}
+                      onChange={(e) => setNewNumQuestions(e.target.value)}
+                      placeholder="Enter number of questions"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 font-medium">Difficulty</label>
+                    <select
+                      className="w-full p-2 border border-gray-300 rounded"
+                      value={newDifficulty}
+                      onChange={(e) => setNewDifficulty(e.target.value)}
+                    >
+                      <option value="Easy">Easy</option>
+                      <option value="Medium">Medium</option>
+                      <option value="Hard">Hard</option>
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block mb-1 font-medium">Category</label>
+                    <input
+                      type="text"
+                      className="w-full p-2 border border-gray-300 rounded"
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      placeholder="Enter category"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex justify-end space-x-2 mt-6">
+                  <button
+                    className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    onClick={() => setShowAddQuizModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={onSubmitQuiz}
+                  >
+                    Create Quiz
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {quizList.map((quiz) => (
