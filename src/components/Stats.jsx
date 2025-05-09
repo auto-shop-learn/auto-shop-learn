@@ -36,7 +36,7 @@ const Stats = () => {
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-red-200">
-        <h3 className="text-lg font-semibold">Livestock count</h3>
+        <h3 className="text-lg font-semibold">Recorded grades</h3>
         <p className="text-3xl font-bold">{livestockCount}</p>
       </div>
       <div className="h-32 w-44 border border-gray-300 p-4 rounded-lg bg-blue-200">

@@ -2,9 +2,17 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
-import Logo from "../assets/svg/logo.svg"
+// import Logo from "../assets/svg/logo.svg"
+import Logo from "../assets/images/logo2.png"
 import { db } from "../config/firebase"
-import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/firestore"
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  doc,
+  updateDoc,
+} from "firebase/firestore"
 
 const Videos = () => {
   const [videos, setVideos] = useState([])
@@ -12,17 +20,14 @@ const Videos = () => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const q = query(
-        collection(db, "videos"),
-        orderBy("createdAt", "desc")
-      )
+      const q = query(collection(db, "videos"), orderBy("createdAt", "desc"))
       const snap = await getDocs(q)
       setVideos(
-        snap.docs.map((doc) => ({ 
-          id: doc.id, 
+        snap.docs.map((doc) => ({
+          id: doc.id,
           ...doc.data(),
           rating: doc.data().rating || 0,
-          completed: doc.data().completed || false
+          completed: doc.data().completed || false,
         }))
       )
     }
@@ -35,13 +40,15 @@ const Videos = () => {
       // Update in Firestore
       const videoRef = doc(db, "videos", videoId)
       await updateDoc(videoRef, {
-        rating: newRating
+        rating: newRating,
       })
-      
+
       // Update local state
-      setVideos(videos.map(video => 
-        video.id === videoId ? {...video, rating: newRating} : video
-      ))
+      setVideos(
+        videos.map((video) =>
+          video.id === videoId ? { ...video, rating: newRating } : video
+        )
+      )
     } catch (error) {
       console.error("Error updating rating:", error)
     }
@@ -53,13 +60,15 @@ const Videos = () => {
       // Update in Firestore
       const videoRef = doc(db, "videos", videoId)
       await updateDoc(videoRef, {
-        completed: isCompleted
+        completed: isCompleted,
       })
-      
+
       // Update local state
-      setVideos(videos.map(video => 
-        video.id === videoId ? {...video, completed: isCompleted} : video
-      ))
+      setVideos(
+        videos.map((video) =>
+          video.id === videoId ? { ...video, completed: isCompleted } : video
+        )
+      )
     } catch (error) {
       console.error("Error updating completion status:", error)
     }
@@ -98,8 +107,8 @@ const Videos = () => {
 
   return (
     <>
-      <div className="logo mb-6">
-        <img src={Logo} alt="Logo" width="500" />
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
       <div className="flex">
         <Sidebar />
@@ -116,29 +125,26 @@ const Videos = () => {
 
           <div className="space-y-8">
             {videos.map((v) => (
-              <div
-                key={v.id}
-                className="border p-4 rounded-lg shadow-sm"
-              >
+              <div key={v.id} className="border p-4 rounded-lg shadow-sm">
                 <div className="flex justify-between mb-2">
                   <h2 className="font-medium">{v.title}</h2>
                   <div className="flex items-center">
                     <label className="inline-flex items-center cursor-pointer mr-4">
-                      <input 
+                      <input
                         type="checkbox"
                         className="form-checkbox h-5 w-5 text-green-600"
                         checked={v.completed}
-                        onChange={(e) => handleCompletionToggle(v.id, e.target.checked)}
+                        onChange={(e) =>
+                          handleCompletionToggle(v.id, e.target.checked)
+                        }
                       />
-                      <span className="ml-2 text-sm text-gray-700">Completed</span>
+                      <span className="ml-2 text-sm text-gray-700">
+                        Completed
+                      </span>
                     </label>
                   </div>
                 </div>
-                <video
-                  src={v.url}
-                  controls
-                  className="w-full max-w-xl"
-                />
+                <video src={v.url} controls className="w-full max-w-xl" />
                 <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-3">
                   <StarRating videoId={v.id} currentRating={v.rating} />
                   {v.completed && (

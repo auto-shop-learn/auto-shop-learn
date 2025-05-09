@@ -3,48 +3,45 @@ import { db, auth } from "../config/firebase"
 import { Auth } from "../components/auth"
 import Sidebar from "../components/Sidebar"
 import { useNavigate } from "react-router-dom"
-import {
-  getDocs,
-  collection,
-  addDoc,
-} from "firebase/firestore"
-import Logo from "../assets/svg/logo.svg"
+import { getDocs, collection, addDoc } from "firebase/firestore"
+// import Logo from "../assets/svg/logo.svg"
+import Logo from "../assets/images/logo2.png"
 
 const AddCrop = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
-  const [cropList, setCropList] = useState([]);
+  const [cropList, setCropList] = useState([])
 
-  const [newCropType, setNewCropType] = useState("");
-  const [newCropNumber, setNewCropNumber] = useState("");
-  const [newCropSize, setNewCropSize] = useState("");
-  const [newArea, setNewArea] = useState("");
-  const [newPlantingMethod, setNewPlantingMethod] = useState("");
-  const [newPlantingDate, setNewPlantingDate] = useState("");
-  const [newEstimatedHarvestDate, setNewEstimatedHarvestDate] = useState("");
-  const [newGrowthStage, setNewGrowthStage] = useState("");
-  const cropsCollectionRef = collection(db, "crops");
+  const [newCropType, setNewCropType] = useState("")
+  const [newCropNumber, setNewCropNumber] = useState("")
+  const [newCropSize, setNewCropSize] = useState("")
+  const [newArea, setNewArea] = useState("")
+  const [newPlantingMethod, setNewPlantingMethod] = useState("")
+  const [newPlantingDate, setNewPlantingDate] = useState("")
+  const [newEstimatedHarvestDate, setNewEstimatedHarvestDate] = useState("")
+  const [newGrowthStage, setNewGrowthStage] = useState("")
+  const cropsCollectionRef = collection(db, "crops")
 
   const getCropList = async () => {
     try {
-      const data = await getDocs(cropsCollectionRef);
+      const data = await getDocs(cropsCollectionRef)
       const filteredData = data.docs.map((doc) => ({
         ...doc.data(),
         id: doc.id,
-      }));
-      console.log(filteredData);
-      setCropList(filteredData);
+      }))
+      console.log(filteredData)
+      setCropList(filteredData)
     } catch (err) {
-      console.error(err);
+      console.error(err)
     }
   }
 
   useEffect(() => {
-    getCropList();
-  }, []);
+    getCropList()
+  }, [])
 
   const onSubmitCrop = async (e) => {
-    e.preventDefault(); // Prevent the form from submitting and refreshing the page
+    e.preventDefault() // Prevent the form from submitting and refreshing the page
 
     try {
       await addDoc(cropsCollectionRef, {
@@ -57,28 +54,28 @@ const AddCrop = () => {
         estimatedHarvestDate: newEstimatedHarvestDate, // Add estimatedHarvestDate
         growthStage: newGrowthStage, // Add growthStage
         userId: auth?.currentUser?.uid,
-      });
+      })
       // Clear input fields
-      setNewCropType("");
-      setNewCropNumber("");
-      setNewCropSize("");
-      setNewArea("");
-      setNewPlantingMethod("");
-      setNewPlantingDate("");
-      setNewEstimatedHarvestDate("");
-      setNewGrowthStage("");
+      setNewCropType("")
+      setNewCropNumber("")
+      setNewCropSize("")
+      setNewArea("")
+      setNewPlantingMethod("")
+      setNewPlantingDate("")
+      setNewEstimatedHarvestDate("")
+      setNewGrowthStage("")
 
-      getCropList();
-      navigate("/crops");
+      getCropList()
+      navigate("/crops")
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
   }
 
   return (
     <>
-      <div className="logo">
-        <img src={Logo} alt="Your Logo" width="500px" />
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
       <div className="flex">
         <Sidebar />
@@ -136,7 +133,7 @@ const AddCrop = () => {
               onChange={(e) => setNewGrowthStage(e.target.value)} // Set the state
             />
           </div>
-          
+
           <button
             className="p-2 bg-blue-700 text-white rounded hover:bg-blue-800"
             onClick={onSubmitCrop}
@@ -146,7 +143,7 @@ const AddCrop = () => {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default AddCrop;
+export default AddCrop

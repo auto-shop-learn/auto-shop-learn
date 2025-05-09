@@ -1,45 +1,50 @@
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Profile from "./Profile";
-import Team from "./Team";
-import Info from "./Info";
-import NewPassword from "./NewPassword";
-import Logo from "../assets/svg/logo.svg";
+import { useState } from "react"
+import { Link, useLocation } from "react-router-dom"
+import Sidebar from "./Sidebar"
+import Profile from "./Profile"
+import Team from "./Team"
+import Info from "./Info"
+import NewPassword from "./NewPassword"
+// import Logo from "../assets/svg/logo.svg";
+import Logo from "../assets/images/logo2.png"
 
 const Settings = () => {
-  const location = useLocation();
-  const [activeComponent, setActiveComponent] = useState(null);
+  const location = useLocation()
+  const [activeComponent, setActiveComponent] = useState(null)
 
   const renderComponent = (component) => {
     switch (component) {
       case "profile":
-        return <Profile />;
+        return <Profile />
       case "team":
-        return <Team />;
+        return <Team />
       case "info":
-        return <Info />;
+        return <Info />
       case "new-password":
-        return <NewPassword />;
+        return <NewPassword />
       default:
-        return null;
+        return null
     }
-  };
+  }
 
   return (
     <>
-      {/* <div className="logo">
-        <img src={Logo} alt="Your Logo" width="500px" />
-      </div> */}
+      {/* <div className="logo mt-3 mb-6">
+              <img src={Logo} alt="Your Logo" width="300px" />
+            </div>*/}
       <div className="flex">
         <Sidebar />
         <div className="container mx-auto py-4">
-          <div className="text-blue-500 text-xl font-semibold mb-2">Settings</div>
+          <div className="text-blue-500 text-xl font-semibold mb-2">
+            Settings
+          </div>
           <div className="flex items-center space-x-10">
             <Link
               to="/settings/profile"
               className={`${
-                location.pathname === "/settings/profile" ? "text-blue-500" : "text-black"
+                location.pathname === "/settings/profile"
+                  ? "text-blue-500"
+                  : "text-black"
               }`}
               onClick={() => setActiveComponent("profile")}
             >
@@ -48,7 +53,9 @@ const Settings = () => {
             <Link
               to="/settings/new-password"
               className={`${
-                location.pathname === "/settings/new-password" ? "text-blue-500" : "text-black"
+                location.pathname === "/settings/new-password"
+                  ? "text-blue-500"
+                  : "text-black"
               }`}
               onClick={() => setActiveComponent("new-password")}
             >
@@ -57,7 +64,9 @@ const Settings = () => {
             <Link
               to="/settings/team"
               className={`${
-                location.pathname === "/settings/team" ? "text-blue-500" : "text-black"
+                location.pathname === "/settings/team"
+                  ? "text-blue-500"
+                  : "text-black"
               }`}
               onClick={() => setActiveComponent("team")}
             >
@@ -66,7 +75,9 @@ const Settings = () => {
             <Link
               to="/settings/info"
               className={`${
-                location.pathname === "/settings/info" ? "text-blue-500" : "text-black"
+                location.pathname === "/settings/info"
+                  ? "text-blue-500"
+                  : "text-black"
               }`}
               onClick={() => setActiveComponent("info")}
             >
@@ -78,7 +89,7 @@ const Settings = () => {
         </div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Settings;
+export default Settings

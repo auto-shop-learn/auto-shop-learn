@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
-import Logo from "../assets/svg/logo.svg"
+// import Logo from "../assets/svg/logo.svg"
 import { auth, db } from "../config/firebase"
 import {
   getStorage,
@@ -9,13 +9,10 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage"
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-} from "firebase/firestore"
+import { collection, addDoc, serverTimestamp } from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { toast } from "react-toastify"
+import Logo from "../assets/images/logo2.png"
 
 // Debug function to check if toast is working
 const testToast = () => {
@@ -37,11 +34,11 @@ const AddVideo = () => {
   const [file, setFile] = useState(null)
   const [progress, setProgress] = useState(0)
   const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed: ", currentUser);
+      console.log("Auth state changed: ", currentUser)
       setUser(currentUser)
     })
     return () => unsubscribe()
@@ -82,11 +79,11 @@ const AddVideo = () => {
 
     console.log("All validation passed, setting loading state")
     setLoading(true)
-    console.log("Value of user:", user);
-    console.log("Value of title:", title);
-    console.log("Value of description:", description);
-    console.log("Value of department:", department);
-    console.log("Value of file:", file);
+    console.log("Value of user:", user)
+    console.log("Value of title:", title)
+    console.log("Value of description:", description)
+    console.log("Value of department:", department)
+    console.log("Value of file:", file)
 
     try {
       console.log("Starting upload process...")
@@ -96,7 +93,10 @@ const AddVideo = () => {
         `videos/${user.uid}/${Date.now()}_${file.name}`
       )
 
-      console.log("Uploading to path:", `videos/${user.uid}/${Date.now()}_${file.name}`)
+      console.log(
+        "Uploading to path:",
+        `videos/${user.uid}/${Date.now()}_${file.name}`
+      )
       const uploadTask = uploadBytesResumable(videoRef, file)
 
       uploadTask.on(
@@ -148,83 +148,86 @@ const AddVideo = () => {
 
   return (
     <>
-    <div className="logo mb-6">
-      <img src={Logo} alt="Logo" width="500" />
-    </div>
-    <div className="flex">
-      <Sidebar />
-      <div className="container mx-auto p-6">
-        
-        <h1 className="text-2xl font-semibold mb-4">Upload New Video</h1>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div>
-            <label className="block mb-1 font-medium">Title</label>
-            <input
-              type="text"
-              required
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-2 border rounded"
-            />
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="department"
-              className="block text-sm font-medium text-blue-900 mb-2"
-            >
-              Select Department
-            </label>
-            <select
-              id="department"
-              name="department"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
-              required
-              className="block w-full px-3 py-2 border border-blue-300 bg-white text-blue-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value="" disabled>
-                -- Select a department --
-              </option>
-              <option value="Sales">Sales</option>
-              <option value="Compliance and Safety">Compliance and Safety</option>
-              <option value="Procurement">Procurement</option>
-              <option value="Product Management">Product Management</option>
-              <option value="Warehouse & Logistics">Warehouse & Logistics</option>
-            </select>
-          </div>
-          <div>
-            <label className="block mb-1 font-medium">Video File</label>
-            <input
-              type="file"
-              accept="video/*"
-              onChange={handleFileChange}
-              className="block"
-              required
-            />
-          </div>
-          {progress > 0 && (
-            <div className="text-sm text-blue-600">
-              Uploading: {progress}%
-            </div>
-          )}
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
-          >
-            {loading ? "Uploading..." : "Upload"}
-          </button>
-        </form>
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
-    </div>
+      <div className="flex">
+        <Sidebar />
+        <div className="container mx-auto p-6">
+          <h1 className="text-2xl font-semibold mb-4">Upload New Video</h1>
+          <form onSubmit={onSubmit} className="space-y-4">
+            <div>
+              <label className="block mb-1 font-medium">Title</label>
+              <input
+                type="text"
+                required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+            <div>
+              <label className="block mb-1 font-medium">Description</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full p-2 border rounded"
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="department"
+                className="block text-sm font-medium text-blue-900 mb-2"
+              >
+                Select Department
+              </label>
+              <select
+                id="department"
+                name="department"
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                required
+                className="block w-full px-3 py-2 border border-blue-300 bg-white text-blue-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              >
+                <option value="" disabled>
+                  -- Select a department --
+                </option>
+                <option value="Sales">Sales</option>
+                <option value="Compliance and Safety">
+                  Compliance and Safety
+                </option>
+                <option value="Procurement">Procurement</option>
+                <option value="Product Management">Product Management</option>
+                <option value="Warehouse & Logistics">
+                  Warehouse & Logistics
+                </option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-1 font-medium">Video File</label>
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleFileChange}
+                className="block"
+                required
+              />
+            </div>
+            {progress > 0 && (
+              <div className="text-sm text-blue-600">
+                Uploading: {progress}%
+              </div>
+            )}
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            >
+              {loading ? "Uploading..." : "Upload"}
+            </button>
+          </form>
+        </div>
+      </div>
     </>
   )
 }

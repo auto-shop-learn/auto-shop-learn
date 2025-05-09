@@ -1,7 +1,8 @@
-import Sidebar from "../components/Sidebar";
-import { auth } from "../config/firebase";
-import Logo from "../assets/svg/logo.svg";
-import BackButton from "./BackButton";
+import Sidebar from "../components/Sidebar"
+import { auth } from "../config/firebase"
+// import Logo from "../assets/svg/logo.svg";
+import Logo from "../assets/images/logo2.png"
+import BackButton from "./BackButton"
 
 function Info() {
   const centerStyle = {
@@ -9,18 +10,18 @@ function Info() {
     alignItems: "center",
     justifyContent: "center",
     height: "100vh", // This makes the div take the full viewport height
-  };
+  }
 
   return (
     <>
-      <div className="logo">
-        <img src={Logo} alt="Your Logo" width="500px" />
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
       <div className="flex">
         <Sidebar />
 
         <div className="container mx-auto p-4" style={centerStyle}>
-          <BackButton /> 
+          <BackButton />
           <div className="bg-white p-4 shadow-lg rounded-lg">
             <h1 className="text-3xl font-semibold mb-4">User Info</h1>
             <div className="space-y-4">
@@ -52,7 +53,9 @@ function Info() {
                       className="w-40 h-40 rounded-full"
                     />
                   ) : (
-                    <p className="text-gray-700">No profile picture available.</p>
+                    <p className="text-gray-700">
+                      No profile picture available.
+                    </p>
                   )}
                 </div>
               </div>
@@ -61,7 +64,7 @@ function Info() {
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default Info;
+export default Info

@@ -7,6 +7,7 @@ import OAuth from "../components/OAuth"
 import visibilityIcon from "../assets/svg/visibilityIcon.svg"
 import { auth } from "../config/firebase";
 
+
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({

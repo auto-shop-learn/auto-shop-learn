@@ -12,7 +12,8 @@ import Sidebar from "../components/Sidebar"
 import ExtLinkIcon from "../assets/svg/extLinkIcon.svg?react"
 import DeleteIcon from "../assets/svg/deleteIcon.svg?react"
 import EditIcon from "../assets/svg/editIcon.svg?react"
-import Logo from "../assets/svg/logo.svg"
+// import Logo from "../assets/svg/logo.svg"
+import Logo from "../assets/images/logo2.png";
 import { format } from "date-fns"
 import { Link } from "react-router-dom"
 
@@ -65,8 +66,8 @@ const Grades = () => {
 
   return (
     <>
-      <div className="logo">
-        <img src={Logo} alt="Your Logo" width="500px" />
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
       <div className="flex">
         <Sidebar />

@@ -3,7 +3,7 @@ import { ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import LandingPage from "./pages/LandingPage"
 import Dashboard from "./pages/Dashboard"
-import Animals from "./pages/Animals"
+import Grades from "./pages/Grades"
 import Crops from "./pages/Quizzes"
 import Inventory from "./pages/Videos"
 import Settings from "./components/Settings"
@@ -77,10 +77,10 @@ function App() {
         <Route path="/student-dashboard" element={<Dashboard />} />
         <Route path="/teacher-dashboard" element={<Dashboard />} />
         {/* </Route> */}
-        <Route path="/animals" element={<Animals />} />
+        <Route path="/grades" element={<Grades />} />
         <Route path="/policy" element={<Terms />} />
-        <Route path="/crops" element={<Crops />} />
-        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/quiz" element={<Quizzes />} />
+        {/* <Route path="/inventory" element={<Videos />} /> */}
         <Route path="/videos" element={<Videos />} />
         <Route path="/add-video" element={<AddVideo />} />
         <Route path="/settings" element={<Settings />} />

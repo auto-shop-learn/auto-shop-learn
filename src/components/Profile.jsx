@@ -1,103 +1,109 @@
-import { useState, useEffect } from "react";
-import Sidebar from "../components/Sidebar";
-import Logo from "../assets/svg/logo.svg";
-import Settings from "../components/Settings";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../config/firebase";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react"
+import Sidebar from "../components/Sidebar"
+// import Logo from "../assets/svg/logo.svg";
+import Logo from "../assets/images/logo2.png"
+import Settings from "../components/Settings"
+import { doc, getDoc, updateDoc } from "firebase/firestore"
+import { db } from "../config/firebase"
+import { toast } from "react-toastify"
+import { useNavigate } from "react-router-dom"
 import BackButton from "./BackButton"
 
-
-
 function Profile() {
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [cellphone, setCellphone] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
+  const [userName, setUserName] = useState("")
+  const [email, setEmail] = useState("")
+  const [cellphone, setCellphone] = useState("")
+  const [country, setCountry] = useState("")
+  const [city, setCity] = useState("")
 
+  const countries = [
+    "USA",
+    "Canada",
+    "UK",
+    "Australia",
+    "South Africa",
+    "Zimbabwe",
+    "Botswana",
+    "Other",
+  ]
 
-  const countries = ["USA", "Canada", "UK", "Australia", "South Africa", "Zimbabwe", "Botswana", "Other"];
-
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Fetch user's profile data and populate the state
-    const userId = "your_user_id_here"; // Replace with the actual UID of the user
-    const profileRef = doc(db, "farmer", userId); // Use the user's UID to reference the document
+    const userId = "your_user_id_here" // Replace with the actual UID of the user
+    const profileRef = doc(db, "farmer", userId) // Use the user's UID to reference the document
 
     const fetchData = async () => {
       try {
-        const profileSnapshot = await getDoc(profileRef);
+        const profileSnapshot = await getDoc(profileRef)
         if (profileSnapshot.exists()) {
-          const profileData = profileSnapshot.data();
+          const profileData = profileSnapshot.data()
           // Update state variables with the fetched data
-          setUserName(profileData.name);
-          setEmail(profileData.email);
-          setCellphone(profileData.cellphoneNum);
-          setCountry(profileData.country);
-          setCity(profileData.city);
-
+          setUserName(profileData.name)
+          setEmail(profileData.email)
+          setCellphone(profileData.cellphoneNum)
+          setCountry(profileData.country)
+          setCity(profileData.city)
         }
       } catch (error) {
-        console.error("Error fetching user profile data:", error);
+        console.error("Error fetching user profile data:", error)
       }
-    };
+    }
 
-    fetchData();
-  }, [userName, email, cellphone, country, city]); // Add appropriate dependencies
+    fetchData()
+  }, [userName, email, cellphone, country, city]) // Add appropriate dependencies
 
   const handleUserNameChange = (e) => {
-    setUserName(e.target.value);
-  };
+    setUserName(e.target.value)
+  }
 
   const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
+    setEmail(e.target.value)
+  }
 
   const handleCellphoneChange = (e) => {
-    setCellphone(e.target.value);
-  };
+    setCellphone(e.target.value)
+  }
 
   const handleCountryChange = (e) => {
-    setCountry(e.target.value);
-  };
+    setCountry(e.target.value)
+  }
 
   const handleCityChange = (e) => {
-    setCity(e.target.value);
-  };
+    setCity(e.target.value)
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
     // Update the user's profile data in Firestore
     try {
-      const profileRef = doc(db, "farmer", "1"); // Assuming document ID is "1"
+      const profileRef = doc(db, "farmer", "1") // Assuming document ID is "1"
       const data = {
         name: userName,
         email: email,
         cellphoneNum: cellphone,
         country: country,
         city: city,
-      };
+      }
 
-      await updateDoc(profileRef, data);
-      navigate("/");
-      toast.success("User Profile Data Updated");
+      await updateDoc(profileRef, data)
+      navigate("/")
+      toast.success("User Profile Data Updated")
     } catch (error) {
-      toast.error("Error updating profile:", error);
+      toast.error("Error updating profile:", error)
     }
-  };
+  }
 
   return (
     <>
-      <div className="logo">
-        <img src={Logo} alt="Your Logo" width="500px" />
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Your Logo" width="300px" />
       </div>
       <div className="flex">
         <Sidebar />
-    <BackButton></BackButton>
+        <BackButton></BackButton>
 
         <div className="container mx-auto p-4">
           <h1 className="text-2xl font-semibold mb-4">User Profile</h1>
@@ -196,11 +202,10 @@ function Profile() {
               Save Profile
             </button>
           </form>
-          
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default Profile;
+export default Profile

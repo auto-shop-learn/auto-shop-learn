@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { getAuth, updatePassword } from "firebase/auth";
 import Sidebar from "../components/Sidebar";
-import Logo from "../assets/svg/logo.svg";
+// import Logo from "../assets/svg/logo.svg";
+import Logo from "../assets/images/logo2.png";
 import Settings from "../components/Settings";
 import BackButton from "./BackButton"
 

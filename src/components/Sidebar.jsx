@@ -1,4 +1,4 @@
-import backgroundImage from "../assets/images/machine.jpg"; // <-- import your sidebar background image
+import backgroundImage from "../assets/images/sidebarGears.jpeg"; // <-- import your sidebar background image
 import SettingsIcon from "../assets/svg/settingsIcon.svg?react";
 import DashboardIcon from "../assets/svg/dashboardIcon.svg?react";
 import AnimalIcon from "../assets/svg/animalIcon.svg?react";
@@ -9,7 +9,6 @@ import { Link, useLocation } from "react-router-dom";
 import { auth } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
-
 
 const Sidebar = () => {
   const location = useLocation();
@@ -44,8 +43,8 @@ const Sidebar = () => {
         </li>
         <li className="mb-4">
           <Link
-            to="/animals"
-            className={location.pathname === "/animals" ? linkClass : defaultClass}
+            to="/grades"
+            className={location.pathname === "/grades" ? linkClass : defaultClass}
           >
             <AnimalIcon fill="#ffffff" width="20px" height="20px" />
             <span className="ml-2">Grades</span>
@@ -53,7 +52,7 @@ const Sidebar = () => {
         </li>
         <li className="mb-4">
           <Link
-            to="/crops"
+            to="/quiz"
             className={location.pathname === "/crops" ? linkClass : defaultClass}
           >
             <CropIcon fill="#ffffff" width="20px" height="20px" />
@@ -62,7 +61,7 @@ const Sidebar = () => {
         </li>
         <li className="mb-4">
           <Link
-            to="/inventory"
+            to="/videos"
             className={location.pathname === "/inventory" ? linkClass : defaultClass}
           >
             <InventoryIcon fill="#ffffff" width="20px" height="20px" />
