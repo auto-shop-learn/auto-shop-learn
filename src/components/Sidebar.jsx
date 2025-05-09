@@ -4,6 +4,7 @@ import DashboardIcon from "../assets/svg/dashboardIcon.svg?react";
 import SchoolIcon from "../assets/svg/schoolIcon.svg?react";
 import TestIcon from "../assets/svg/testIcon.svg?react";
 import VideoIcon from "../assets/svg/videoIcon2.svg?react";
+import CertIcon from "../assets/svg/certIcon.svg?react";
 import LogoutIcon from "../assets/svg/logoutIcon.svg?react";
 import { Link, useLocation } from "react-router-dom";
 import { auth } from "../config/firebase";
@@ -53,7 +54,7 @@ const Sidebar = () => {
         <li className="mb-4">
           <Link
             to="/quiz"
-            className={location.pathname === "/crops" ? linkClass : defaultClass}
+            className={location.pathname === "/quiz" ? linkClass : defaultClass}
           >
             <TestIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Quizzes</span>
@@ -62,10 +63,19 @@ const Sidebar = () => {
         <li className="mb-4">
           <Link
             to="/videos"
-            className={location.pathname === "/inventory" ? linkClass : defaultClass}
+            className={location.pathname === "/videos" ? linkClass : defaultClass}
           >
             <VideoIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Videos</span>
+          </Link>
+        </li>
+        <li className="mb-4">
+          <Link
+            to="/certificates"
+            className={location.pathname === "/certificates" ? linkClass : defaultClass}
+          >
+            <CertIcon fill="#ffffff" width="27px" height="27px" />
+            <span className="ml-2">Certificates</span>
           </Link>
         </li>
         <li className="mb-4">
