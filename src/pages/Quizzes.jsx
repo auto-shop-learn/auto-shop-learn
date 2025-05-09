@@ -92,12 +92,14 @@ const Quizzes = () => {
         <Sidebar />
         <div className="container mx-auto py-4">
           <div className="flex items-center space-x-4 mb-4">
+          <Link to="/add-quiz">
             <button
               className="p-2 bg-blue-700 text-white rounded hover:bg-blue-800"
               onClick={onSubmitQuiz}
             >
               + Add Quiz
             </button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

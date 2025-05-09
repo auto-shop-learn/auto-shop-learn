@@ -80,6 +80,15 @@ const Sidebar = () => {
         </li>
         <li className="mb-4">
           <Link
+            to="/materials"
+            className={location.pathname === "/materials" ? linkClass : defaultClass}
+          >
+            <CertIcon fill="#ffffff" width="27px" height="27px" />
+            <span className="ml-2">Learning Materials</span>
+          </Link>
+        </li>
+        <li className="mb-4">
+          <Link
             to="/settings"
             className={location.pathname === "/settings" ? linkClass : defaultClass}
           >
