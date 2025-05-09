@@ -5,6 +5,7 @@ import SchoolIcon from "../assets/svg/schoolIcon.svg?react";
 import TestIcon from "../assets/svg/testIcon.svg?react";
 import VideoIcon from "../assets/svg/videoIcon2.svg?react";
 import CertIcon from "../assets/svg/certIcon.svg?react";
+import BrainIcon from "../assets/svg/brainIcon.svg?react";
 import LogoutIcon from "../assets/svg/logoutIcon.svg?react";
 import { Link, useLocation } from "react-router-dom";
 import { auth } from "../config/firebase";
@@ -83,7 +84,7 @@ const Sidebar = () => {
             to="/materials"
             className={location.pathname === "/materials" ? linkClass : defaultClass}
           >
-            <CertIcon fill="#ffffff" width="27px" height="27px" />
+            <BrainIcon fill="#ffffff" width="21px" height="21px" />
             <span className="ml-2">Learning Materials</span>
           </Link>
         </li>
