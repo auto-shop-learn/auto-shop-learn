@@ -19,8 +19,8 @@ const Dashboard = () => {
             <Stats />
           </div>
           <Users />
-          <Employees />
-          <Educators />
+          {/* <Employees /> */}
+          {/* <Educators /> */}
         </div>
       </div>
     </>

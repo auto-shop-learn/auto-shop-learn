@@ -132,7 +132,7 @@ const Videos = () => {
                     <label className="inline-flex items-center cursor-pointer mr-4">
                       <input
                         type="checkbox"
-                        className="form-checkbox h-5 w-5 text-green-600"
+                        className="form-checkbox h-5 w-5 text-blue-600"
                         checked={v.completed}
                         onChange={(e) =>
                           handleCompletionToggle(v.id, e.target.checked)

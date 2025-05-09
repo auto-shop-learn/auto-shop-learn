@@ -1,9 +1,9 @@
 import backgroundImage from "../assets/images/sidebarGears.jpeg"; // <-- import your sidebar background image
 import SettingsIcon from "../assets/svg/settingsIcon.svg?react";
 import DashboardIcon from "../assets/svg/dashboardIcon.svg?react";
-import AnimalIcon from "../assets/svg/animalIcon.svg?react";
-import CropIcon from "../assets/svg/cropIcon.svg?react";
-import InventoryIcon from "../assets/svg/inventoryIcon.svg?react";
+import SchoolIcon from "../assets/svg/schoolIcon.svg?react";
+import TestIcon from "../assets/svg/testIcon.svg?react";
+import VideoIcon from "../assets/svg/videoIcon2.svg?react";
 import LogoutIcon from "../assets/svg/logoutIcon.svg?react";
 import { Link, useLocation } from "react-router-dom";
 import { auth } from "../config/firebase";
@@ -37,7 +37,7 @@ const Sidebar = () => {
             to="/dashboard"
             className={location.pathname === "/dashboard" ? linkClass : defaultClass}
           >
-            <DashboardIcon fill="#ffffff" width="20px" height="20px" />
+            <DashboardIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Dashboard</span>
           </Link>
         </li>
@@ -46,7 +46,7 @@ const Sidebar = () => {
             to="/grades"
             className={location.pathname === "/grades" ? linkClass : defaultClass}
           >
-            <AnimalIcon fill="#ffffff" width="20px" height="20px" />
+            <SchoolIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Grades</span>
           </Link>
         </li>
@@ -55,7 +55,7 @@ const Sidebar = () => {
             to="/quiz"
             className={location.pathname === "/crops" ? linkClass : defaultClass}
           >
-            <CropIcon fill="#ffffff" width="20px" height="20px" />
+            <TestIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Quizzes</span>
           </Link>
         </li>
@@ -64,7 +64,7 @@ const Sidebar = () => {
             to="/videos"
             className={location.pathname === "/inventory" ? linkClass : defaultClass}
           >
-            <InventoryIcon fill="#ffffff" width="20px" height="20px" />
+            <VideoIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Videos</span>
           </Link>
         </li>
@@ -73,7 +73,7 @@ const Sidebar = () => {
             to="/settings"
             className={location.pathname === "/settings" ? linkClass : defaultClass}
           >
-            <SettingsIcon fill="#ffffff" width="20px" height="20px" />
+            <SettingsIcon fill="#ffffff" width="27px" height="27px" />
             <span className="ml-2">Settings</span>
           </Link>
         </li>
@@ -84,7 +84,7 @@ const Sidebar = () => {
           to="/sign-in"
           className={location.pathname === "/sign-in" ? linkClass : defaultClass}
         >
-          <LogoutIcon fill="#ffffff" width="20px" height="20px" />
+          <LogoutIcon fill="#ffffff" width="27px" height="27px" />
           <span className="ml-2">Logout</span>
         </Link>
       </div>

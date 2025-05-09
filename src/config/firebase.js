@@ -5,13 +5,13 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyCaBbzEZ9Y9OeX7d4xmKZ8pos_a1uJwXjQ",
-    authDomain: "autoshop-11f7b.firebaseapp.com",
-    projectId: "autoshop-11f7b",
-    storageBucket: "autoshop-11f7b.firebasestorage.app",
-    messagingSenderId: "864037068512",
-    appId: "1:864037068512:web:b0f1460ba456c660567a85",
-    measurementId: "G-9Q9EV58LXJ"
+    apiKey: "AIzaSyDuT32ZoLsFf3-2S-eFFcGXz45LYKfnGHo",
+    authDomain: "autoshoplearn.firebaseapp.com",
+    projectId: "autoshoplearn",
+    storageBucket: "autoshoplearn.firebasestorage.app",
+    messagingSenderId: "705979825849",
+    appId: "1:705979825849:web:e0e2892b923b6c58cfa568",
+    measurementId: "G-G4499JZQ1J"
   };
 
 // Initialize Firebase
