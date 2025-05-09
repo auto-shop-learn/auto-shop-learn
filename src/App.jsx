@@ -15,7 +15,7 @@ import SearchBar from "./components/SearchBar"
 import SignIn from "./pages/SignIn"
 import SignUp from "./pages/SignUp"
 import Terms from "./pages/Terms"
-import AddAnimal from "./pages/AddAnimal"
+import AddGrade from "./pages/AddGrade"
 import AddCrop from "./pages/AddQuiz"
 import AddInventory from "./pages/AddVideo"
 import ForgotPassword from "./pages/ForgotPassword"
@@ -86,7 +86,7 @@ function App() {
         <Route path="/settings" element={<Settings />} />
         <Route path="/sign-in" element={<SignIn />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/add-animal" element={<AddAnimal />} />
+        <Route path="/add-grade" element={<AddGrade />} />
         <Route path="/add-crop" element={<AddCrop />} />
         <Route path="/add-inventory" element={<AddInventory />} />
         <Route path="/settings/profile" element={<Profile />} />

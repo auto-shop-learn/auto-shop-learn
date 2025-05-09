@@ -23,8 +23,8 @@ const Sidebar = () => {
     }
   };
 
-  const linkClass = "bg-blue-700 text-white flex items-center space-x-2 rounded hover:bg-gray-700 p-2";
-  const defaultClass = "flex items-center space-x-2 rounded hover:bg-gray-700 p-2";
+  const linkClass = "bg-blue-700 text-white flex items-center space-x-2 rounded hover:bg-blue-700 p-2";
+  const defaultClass = "flex items-center space-x-2 rounded hover:bg-blue-700 p-2";
 
   return (
     <div
@@ -46,7 +46,7 @@ const Sidebar = () => {
             to="/grades"
             className={location.pathname === "/grades" ? linkClass : defaultClass}
           >
-            <SchoolIcon fill="#ffffff" width="27px" height="27px" />
+            <SchoolIcon fill="#ffffff" width="29px" height="29px" />
             <span className="ml-2">Grades</span>
           </Link>
         </li>

@@ -80,7 +80,7 @@ const Grades = () => {
             </Link>
             <button
               onClick={handleDownload}
-              className="p-2 bg-green-600 text-white rounded hover:bg-green-700"
+              className="p-2 bg-blue-400 text-white rounded hover:bg-blue-500"
             >
               Download CSV
             </button>

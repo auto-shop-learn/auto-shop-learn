@@ -111,7 +111,7 @@ const AddAnimal = () => {
         setNewAnimalDob("")
         setErrors({}) // Clear validation errors
         getAnimalList()
-        navigate("/animals")
+        navigate("/grades")
       } catch (error) {
         console.error(error)
       }
