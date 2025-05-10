@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
-// import Logo from "../assets/svg/logo.svg"
 import { auth, db } from "../config/firebase"
 import {
   getStorage,
@@ -9,21 +8,22 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage"
-import { collection, addDoc, serverTimestamp } from "firebase/firestore"
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+  updateDoc,
+  query,
+  where,
+  getDocs,
+  increment,
+  arrayUnion
+} from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { toast } from "react-toastify"
 import Logo from "../assets/images/logo2.png"
-
-// Debug function to check if toast is working
-const testToast = () => {
-  console.log("Testing toast notification")
-  toast.info("Test notification")
-  toast.error("Test error notification")
-}
-
-// Add debugging helpers to global window object
-window.auth = auth
-window.testToast = testToast
 
 const AddVideo = () => {
   const navigate = useNavigate()
@@ -31,72 +31,83 @@ const AddVideo = () => {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [department, setDepartment] = useState("")
+  const [courseName, setCourseName] = useState("")
   const [file, setFile] = useState(null)
   const [progress, setProgress] = useState(0)
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      console.log("Auth state changed: ", currentUser)
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser)
+
+      if (currentUser) {
+        try {
+          // Fetch user's information from users collection
+          const userDocRef = doc(db, "users", currentUser.uid)
+          const userDoc = await getDoc(userDocRef)
+          
+          if (userDoc.exists()) {
+            const data = userDoc.data()
+            setUserInfo(data)
+            // Set department from user's profile
+            if (data.department) {
+              setDepartment(data.department)
+            } else {
+              toast.error("Your account doesn't have a department assigned.")
+            }
+          } else {
+            toast.error("No user profile found.")
+            navigate("/profile")
+          }
+        } catch (err) {
+          console.error("Error fetching user info:", err)
+          toast.error("Error loading your user information")
+        }
+      }
     })
     return () => unsubscribe()
-  }, [])
+  }, [navigate])
 
   const handleFileChange = (e) => {
     if (e.target.files[0]) {
       setFile(e.target.files[0])
-      console.log("File selected:", e.target.files[0].name)
     }
   }
 
   const onSubmit = async (e) => {
-    // Prevent the default form submission
     e.preventDefault()
-    console.log("Form submitted - onSubmit function called")
 
-    // Check if user is logged in
     if (!user) {
-      console.log("User not authenticated")
       toast.error("You must be logged in to upload a video.")
       return
     }
 
-    // Check if department is selected
     if (!department) {
-      console.log("Department not selected")
-      toast.error("Please select a department.")
+      toast.error("Your account doesn't have a department assigned.")
       return
     }
 
-    // Check if file is selected
+    if (!courseName) {
+      toast.error("Please enter a course name.")
+      return
+    }
+
     if (!file) {
-      console.log("No file selected")
       toast.error("Please select a video file to upload.")
       return
     }
 
-    console.log("All validation passed, setting loading state")
     setLoading(true)
-    console.log("Value of user:", user)
-    console.log("Value of title:", title)
-    console.log("Value of description:", description)
-    console.log("Value of department:", department)
-    console.log("Value of file:", file)
 
     try {
-      console.log("Starting upload process...")
       const storage = getStorage()
       const videoRef = storageRef(
         storage,
         `videos/${user.uid}/${Date.now()}_${file.name}`
       )
 
-      console.log(
-        "Uploading to path:",
-        `videos/${user.uid}/${Date.now()}_${file.name}`
-      )
       const uploadTask = uploadBytesResumable(videoRef, file)
 
       uploadTask.on(
@@ -105,42 +116,66 @@ const AddVideo = () => {
           const currentProgress = Math.round(
             (snapshot.bytesTransferred / snapshot.totalBytes) * 100
           )
-          console.log("Upload progress:", currentProgress)
           setProgress(currentProgress)
         },
         (err) => {
-          console.error("Upload error:", err)
           toast.error("Upload failed: " + err.message)
           setLoading(false)
         },
         async () => {
-          console.log("Upload completed, getting download URL")
           try {
             const url = await getDownloadURL(uploadTask.snapshot.ref)
-            console.log("Download URL obtained:", url)
 
-            await addDoc(collection(db, "videos"), {
+            // Add to videos collection
+            const videoDocRef = await addDoc(collection(db, "videos"), {
               title,
               description,
               department,
+              courseName,
               url,
               uploadedBy: user.uid,
+              educatorName: userInfo?.name || "Unknown Educator",
               createdAt: serverTimestamp(),
             })
 
-            console.log("Document added to Firestore")
+            // Also add to courses collection
+            const coursesCollection = collection(db, "courses")
+            const courseQuery = await getDocs(
+              query(coursesCollection, 
+                where("name", "==", courseName), 
+                where("department", "==", department))
+            )
+
+            if (courseQuery.empty) {
+              // Course doesn't exist, create it
+              await addDoc(coursesCollection, {
+                name: courseName,
+                department,
+                createdBy: user.uid,
+                createdAt: serverTimestamp(),
+                videoCount: 1,
+                videos: [videoDocRef.id]
+              })
+            } else {
+              // Course exists, update it
+              const courseDoc = courseQuery.docs[0]
+              await updateDoc(courseDoc.ref, {
+                videoCount: increment(1),
+                videos: arrayUnion(videoDocRef.id),
+                updatedAt: serverTimestamp()
+              })
+            }
+
             toast.success("Video uploaded successfully")
             setLoading(false)
-            navigate("/videos")
+            navigate("/dashboard/videos")
           } catch (err) {
-            console.error("Error in upload completion handler:", err)
             toast.error("Error saving video information: " + err.message)
             setLoading(false)
           }
         }
       )
     } catch (err) {
-      console.error("Error starting upload:", err)
       toast.error("Upload failed: " + err.message)
       setLoading(false)
     }
@@ -175,33 +210,29 @@ const AddVideo = () => {
             />
           </div>
           <div>
-            <label
-              htmlFor="department"
-              className="block text-sm font-medium text-blue-900 mb-2"
-            >
-              Select Department
-            </label>
-            <select
-              id="department"
-              name="department"
-              value={department}
-              onChange={(e) => setDepartment(e.target.value)}
+            <label className="block mb-1 font-medium">Course Name</label>
+            <input
+              type="text"
               required
-              className="block w-full px-3 py-2 border border-blue-300 bg-white text-blue-900 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            >
-              <option value="" disabled>
-                -- Select a department --
-              </option>
-              <option value="Sales">Sales</option>
-              <option value="Compliance and Safety">
-                Compliance and Safety
-              </option>
-              <option value="Procurement">Procurement</option>
-              <option value="Product Management">Product Management</option>
-              <option value="Warehouse & Logistics">
-                Warehouse & Logistics
-              </option>
-            </select>
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              className="w-full p-2 border rounded"
+              placeholder="Enter the course name this video belongs to"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Department</label>
+            <input
+              type="text"
+              value={department || "Loading..."}
+              className="w-full p-2 border rounded bg-gray-100"
+              readOnly
+            />
+            {!department && (
+              <p className="text-sm text-red-500 mt-1">
+                Your account doesn't have a department assigned. Please contact support.
+              </p>
+            )}
           </div>
           <div>
             <label className="block mb-1 font-medium">Video File</label>
@@ -221,6 +252,7 @@ const AddVideo = () => {
           <button
             type="submit"
             className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            disabled={loading || !department}
           >
             {loading ? "Uploading..." : "Upload"}
           </button>

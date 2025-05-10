@@ -12,6 +12,7 @@ import SignUp from "./pages/SignUp";
 import ForgotPassword from "./pages/ForgotPassword";
 import Dashboard from "./pages/Dashboard";
 import Videos from "./pages/Videos";
+import AddVideo from "./pages/AddVideo"; // ✅ NEW import
 import Quiz from "./pages/Quizzes";
 import Certificates from "./pages/Certificates";
 import LearningMaterials from "./pages/LearningMaterials";
@@ -31,7 +32,6 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setCurrentUser(user);
-        // Fetch user role
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           setUserRole(userDoc.data().role);
@@ -80,6 +80,10 @@ function App() {
         <Route 
           path="/videos" 
           element={currentUser ? <Videos /> : <Navigate to="/sign-in" replace />} 
+        />
+        <Route 
+          path="/add-video" 
+          element={currentUser && userRole === "Educator" ? <AddVideo /> : <Navigate to="/videos" replace />} 
         />
         <Route 
           path="/quiz" 

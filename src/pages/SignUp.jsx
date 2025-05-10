@@ -73,7 +73,7 @@ function SignUp() {
       toast.success("Registered successfully!");
 
       // Redirect to the Sign-In page after successful registration
-      navigate("/sign-in");
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
       switch (error.code) {

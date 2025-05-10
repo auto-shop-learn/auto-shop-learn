@@ -13,6 +13,9 @@ import {
   collection,
   addDoc,
   serverTimestamp,
+  doc,
+  getDoc,
+  getDocs,
 } from "firebase/firestore"
 import { onAuthStateChanged } from "firebase/auth"
 import { toast } from "react-toastify"
@@ -21,15 +24,59 @@ const AddMaterial = () => {
   const navigate = useNavigate()
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState("")
+  const [courseName, setCourseName] = useState("")
+  const [department, setDepartment] = useState("")
   const [description, setDescription] = useState("")
   const [file, setFile] = useState(null)
   const [fileType, setFileType] = useState("")
   const [progress, setProgress] = useState(0)
   const [loading, setLoading] = useState(false)
+  const [availableCourses, setAvailableCourses] = useState([])
+  const [fetchingCourses, setFetchingCourses] = useState(false)
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => setUser(u))
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      setUser(u)
+      if (u) {
+        // Fetch user data to get department
+        try {
+          const userDoc = await getDoc(doc(db, "users", u.uid))
+          if (userDoc.exists()) {
+            setDepartment(userDoc.data().department || "")
+          }
+        } catch (err) {
+          console.error("Error fetching user data:", err)
+          toast.error("Failed to load user information")
+        }
+      }
+    })
     return () => unsub()
+  }, [])
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      setFetchingCourses(true)
+      try {
+        const videosSnapshot = await getDocs(collection(db, "videos"))
+        const courses = new Set()
+        
+        videosSnapshot.forEach(doc => {
+          const data = doc.data()
+          if (data.courseName) {
+            courses.add(data.courseName)
+          }
+        })
+        
+        setAvailableCourses(Array.from(courses).sort())
+      } catch (err) {
+        console.error("Error fetching courses:", err)
+        toast.error("Failed to load available courses")
+      } finally {
+        setFetchingCourses(false)
+      }
+    }
+    
+    fetchCourses()
   }, [])
 
   const handleFileChange = (e) => {
@@ -49,6 +96,10 @@ const AddMaterial = () => {
     }
     if (!file) {
       toast.error("Select a file")
+      return
+    }
+    if (!courseName) {
+      toast.error("Please select a course")
       return
     }
 
@@ -74,6 +125,8 @@ const AddMaterial = () => {
         const url = await getDownloadURL(uploadTask.snapshot.ref)
         await addDoc(collection(db, "learningMaterials"), {
           title,
+          courseName,
+          department,
           description,
           url,
           fileType,
@@ -106,6 +159,35 @@ const AddMaterial = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Course Name</label>
+            <select
+              value={courseName}
+              onChange={(e) => setCourseName(e.target.value)}
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">Select a course</option>
+              {fetchingCourses ? (
+                <option disabled>Loading courses...</option>
+              ) : (
+                availableCourses.map((course) => (
+                  <option key={course} value={course}>
+                    {course}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Department</label>
+            <input
+              type="text"
+              value={department}
+              readOnly
+              className="w-full p-2 border rounded bg-gray-100"
             />
           </div>
           <div>
