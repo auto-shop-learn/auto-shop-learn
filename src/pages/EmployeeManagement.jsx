@@ -27,19 +27,23 @@ const EmployeeManagement = () => {
   const [positions, setPositions] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [educatorDepartment, setEducatorDepartment] = useState(null);
 
   // Track authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        setCurrentUser(user);
-        // If user is educator, get their department
-        if (user.role === "Educator") {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          if (userDoc.exists()) {
-            const userData = userDoc.data();
-            setEducatorDepartment(userData.department);
+        // Get additional user data from Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setCurrentUser({
+            ...user,
+            role: userData.role,
+            department: userData.department
+          });
+          
+          // If user is educator, set their department for filtering
+          if (userData.role === "Educator") {
             setSelectedDepartment(userData.department);
           }
         }
@@ -66,10 +70,10 @@ const EmployeeManagement = () => {
         );
 
         // If current user is an educator, filter by their department
-        if (currentUser?.role === "Educator" && educatorDepartment) {
+        if (currentUser?.role === "Educator" && currentUser?.department) {
           employeesQuery = query(
             employeesQuery,
-            where("department", "==", educatorDepartment)
+            where("department", "==", currentUser.department)
           );
         }
         
@@ -140,7 +144,7 @@ const EmployeeManagement = () => {
     };
 
     fetchEmployees();
-  }, [currentUser, educatorDepartment]);
+  }, [currentUser]);
 
   // Filter employees based on search term and filters
   useEffect(() => {
@@ -151,6 +155,13 @@ const EmployeeManagement = () => {
       filtered = filtered.filter(employee =>
         employee.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         employee.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by department (only for admins)
+    if (selectedDepartment !== "all" && currentUser?.role !== "Educator") {
+      filtered = filtered.filter(employee =>
+        employee.department === selectedDepartment
       );
     }
 
@@ -184,7 +195,7 @@ const EmployeeManagement = () => {
     }
 
     setFilteredEmployees(filtered);
-  }, [searchTerm, selectedPosition, selectedProgress, employees]);
+  }, [searchTerm, selectedDepartment, selectedPosition, selectedProgress, employees, currentUser]);
 
   const calculateProgress = (employee) => {
     const completedCount = employee.progress.completedVideos?.length || 0;
@@ -236,6 +247,21 @@ const EmployeeManagement = () => {
               className="p-2 border rounded"
             />
             
+            {currentUser?.role !== "Educator" && (
+              <select
+                value={selectedDepartment}
+                onChange={(e) => setSelectedDepartment(e.target.value)}
+                className="p-2 border rounded"
+              >
+                <option value="all">All Departments</option>
+                {departments.map((department) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
+            )}
+            
             <select
               value={selectedPosition}
               onChange={(e) => setSelectedPosition(e.target.value)}
@@ -260,15 +286,15 @@ const EmployeeManagement = () => {
               <option value="intermediate">Intermediate (30-70%)</option>
               <option value="advanced">Advanced (70-100%)</option>
             </select>
-            
-            <div className="text-right">
-              <span className="text-sm text-gray-500">
-                Showing {filteredEmployees.length} of {employees.length} employees
-              </span>
-              {educatorDepartment && (
-                <p className="text-sm text-gray-500">Department: {educatorDepartment}</p>
-              )}
-            </div>
+          </div>
+          
+          <div className="text-right mb-4">
+            <span className="text-sm text-gray-500">
+              Showing {filteredEmployees.length} of {employees.length} employees
+            </span>
+            {currentUser?.role === "Educator" && (
+              <p className="text-sm text-gray-500">Department: {currentUser.department}</p>
+            )}
           </div>
         </div>
 

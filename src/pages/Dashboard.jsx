@@ -380,10 +380,7 @@ const Dashboard = () => {
             color="green" 
           />
           <StatCard 
-            title="Avg. Quiz Score" 
-            value={`${stats.averageScore}%`} 
-            icon="📊" 
-            color="purple" 
+             
           />
           <StatCard 
             title="Certificates Issued" 

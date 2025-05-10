@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { 
   collection, 
   getDocs, 
@@ -32,6 +32,10 @@ const Quizzes = () => {
   const [userAnswers, setUserAnswers] = useState({});
   const [score, setScore] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
+  const timerRef = useRef(null);
+  
   const [userData, setUserData] = useState({ 
     name: "", 
     email: "", 
@@ -46,7 +50,8 @@ const Quizzes = () => {
     category: "General",
     passingScore: 70,
     status: "Draft",
-    questionsPerQuiz: 10 // New field to track how many questions to select
+    questionsPerQuiz: 10,
+    timeLimit: 30 // Time limit in minutes
   });
 
   const [questions, setQuestions] = useState([]);
@@ -54,6 +59,7 @@ const Quizzes = () => {
     text: "",
     options: ["", "", "", ""],
     correctAnswer: 0,
+    marks: 1 // Default to 1 mark per question
   });
 
   // Firestore references
@@ -62,6 +68,28 @@ const Quizzes = () => {
   const quizAttemptsCollectionRef = collection(db, "quizAttempts");
   const certificatesCollectionRef = collection(db, "certificates");
   const userProgressCollectionRef = collection(db, "userProgress");
+  const userGradesCollectionRef = collection(db, "userGrades");
+
+  // Format time for display
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Timer effect
+  useEffect(() => {
+    if (timerActive && timeLeft > 0) {
+      timerRef.current = setTimeout(() => {
+        setTimeLeft(timeLeft - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && timerActive) {
+      // Time's up - auto submit
+      setTimerActive(false);
+      submitQuiz();
+    }
+    return () => clearTimeout(timerRef.current);
+  }, [timeLeft, timerActive]);
 
   // Fetch user data and quizzes
   useEffect(() => {
@@ -107,7 +135,6 @@ const Quizzes = () => {
         ...doc.data() 
       }));
       
-      // Get the quiz to know how many questions to select
       const quizDoc = await getDoc(doc(quizzesCollectionRef, quizId));
       const quizData = quizDoc.data();
       const questionsToSelect = quizData.questionsPerQuiz || 10;
@@ -118,11 +145,15 @@ const Quizzes = () => {
         .slice(0, questionsToSelect);
       
       setQuizQuestions(selectedQuestions);
-      setCurrentQuiz(quizList.find(q => q.id === quizId));
+      setCurrentQuiz(quizData);
       setShowQuizModal(true);
       setCurrentQuestionIndex(0);
       setUserAnswers({});
       setScore(null);
+      
+      // Set timer (convert minutes to seconds)
+      setTimeLeft((quizData.timeLimit || 30) * 60);
+      setTimerActive(true);
     } catch (error) {
       console.error("Error starting quiz:", error);
     }
@@ -136,36 +167,51 @@ const Quizzes = () => {
   };
 
   const submitQuiz = async () => {
-    // Calculate score
-    const correctAnswers = quizQuestions.reduce((count, question) => {
-      return count + (userAnswers[question.id] === question.correctAnswer ? 1 : 0);
-    }, 0);
+    // Stop timer
+    setTimerActive(false);
+    clearTimeout(timerRef.current);
     
-    const percentage = Math.round((correctAnswers / quizQuestions.length) * 100);
+    // Calculate score
+    let totalMarks = 0;
+    let obtainedMarks = 0;
+    
+    quizQuestions.forEach(question => {
+      totalMarks += question.marks || 1;
+      if (userAnswers[question.id] === question.correctAnswer) {
+        obtainedMarks += question.marks || 1;
+      }
+    });
+    
+    const percentage = Math.round((obtainedMarks / totalMarks) * 100);
     const passed = percentage >= currentQuiz.passingScore;
     
     setScore({ 
-      correct: correctAnswers, 
-      total: quizQuestions.length, 
+      correct: obtainedMarks, 
+      total: totalMarks, 
       percentage, 
-      passed 
+      passed,
+      timeTaken: (currentQuiz.timeLimit * 60) - timeLeft // Time taken in seconds
     });
 
     // Save attempt data
     const attemptData = {
-      quizId: currentQuiz.id,
-      quizTitle: currentQuiz.title,
-      userId: auth.currentUser.uid,
-      userName: userData.name,
-      userEmail: userData.email,
-      score: percentage,
-      correctAnswers,
-      totalQuestions: quizQuestions.length,
-      passed,
+      quizId: currentQuiz?.id || "",
+      quizTitle: currentQuiz?.title || "",
+      userId: auth.currentUser?.uid || "",
+      userName: userData?.name || "",
+      userEmail: userData?.email || "",
+      score: percentage || 0,
+      correctAnswers: obtainedMarks || 0,
+      totalQuestions: quizQuestions?.length || 0,
+      totalMarks: totalMarks || 0,
+      obtainedMarks: obtainedMarks || 0,
+      passed: passed || false,
+      timeTaken: ((currentQuiz?.timeLimit || 30) * 60) - (timeLeft || 0),
       answers: quizQuestions.map(q => ({
-        questionId: q.id,
-        selected: userAnswers[q.id],
-        correct: userAnswers[q.id] === q.correctAnswer
+        questionId: q?.id || "",
+        selected: userAnswers[q?.id] || null,
+        correct: userAnswers[q?.id] === q?.correctAnswer,
+        marks: q?.marks || 1
       })),
       submittedAt: serverTimestamp()
     };
@@ -176,6 +222,9 @@ const Quizzes = () => {
       
       // Update user progress
       await updateUserProgress(currentQuiz.id, percentage, passed);
+      
+      // Update user grades (average score)
+      await updateUserGrades(currentQuiz.id, percentage);
       
       // Generate certificate if passed
       if (passed) {
@@ -214,6 +263,58 @@ const Quizzes = () => {
     }
   };
 
+  const updateUserGrades = async (quizId, newScore) => {
+    try {
+      const gradeRef = doc(userGradesCollectionRef, auth.currentUser.uid);
+      const gradeSnap = await getDoc(gradeRef);
+      
+      let existingGrades = gradeSnap.exists() ? gradeSnap.data().grades : {};
+      
+      // Calculate new average for this quiz
+      const quizAttemptsQuery = query(
+        quizAttemptsCollectionRef,
+        where("userId", "==", auth.currentUser.uid),
+        where("quizId", "==", quizId)
+      );
+      
+      const attemptsSnapshot = await getDocs(quizAttemptsQuery);
+      const allScores = attemptsSnapshot.docs.map(doc => doc.data().score);
+      const averageScore = Math.round(allScores.reduce((a, b) => a + b, 0) / allScores.length);
+      
+      const newGrades = {
+        ...existingGrades,
+        [quizId]: {
+          quizTitle: currentQuiz.title,
+          averageScore,
+          attempts: allScores.length,
+          lastAttempt: serverTimestamp()
+        }
+      };
+      
+      await setDoc(gradeRef, {
+        userId: auth.currentUser.uid,
+        userName: userData.name,
+        department: userData.department,
+        grades: newGrades,
+        overallAverage: calculateOverallAverage(newGrades),
+        lastUpdated: serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.error("Error updating grades:", error);
+    }
+  };
+
+  const calculateOverallAverage = (grades) => {
+    const quizIds = Object.keys(grades);
+    if (quizIds.length === 0) return 0;
+    
+    const total = quizIds.reduce((sum, quizId) => {
+      return sum + grades[quizId].averageScore;
+    }, 0);
+    
+    return Math.round(total / quizIds.length);
+  };
+
   const generateCertificate = async (quizId, score) => {
     try {
       const certData = {
@@ -231,15 +332,17 @@ const Quizzes = () => {
       };
       
       await addDoc(certificatesCollectionRef, certData);
+      toast.success("Certificate generated successfully!");
     } catch (error) {
       console.error("Error generating certificate:", error);
+      toast.error("Failed to generate certificate");
     }
   };
 
   // Quiz creation functions (Educator only)
   const addQuestion = () => {
     if (!currentQuestion.text || currentQuestion.options.some(opt => !opt)) {
-      alert("Please fill all question fields");
+      toast.error("Please fill all question fields");
       return;
     }
 
@@ -248,12 +351,13 @@ const Quizzes = () => {
       text: "",
       options: ["", "", "", ""],
       correctAnswer: 0,
+      marks: 1
     });
   };
 
   const createQuiz = async () => {
     if (questions.length < 20) {
-      alert("Minimum 20 questions required for question pool");
+      toast.error("Minimum 20 questions required for question pool");
       return;
     }
 
@@ -265,8 +369,9 @@ const Quizzes = () => {
         quizId: quizRef.id,
         createdBy: auth.currentUser.uid,
         createdAt: serverTimestamp(),
-        totalQuestions: questions.length, // Store total questions in pool
-        questionsPerQuiz: quizForm.questionsPerQuiz // Store how many to select per attempt
+        totalQuestions: questions.length,
+        questionsPerQuiz: quizForm.questionsPerQuiz,
+        timeLimit: quizForm.timeLimit
       });
 
       // Add all questions to subcollection (pool)
@@ -289,8 +394,10 @@ const Quizzes = () => {
       
       setShowCreateModal(false);
       resetForm();
+      toast.success("Quiz created successfully!");
     } catch (error) {
       console.error("Error creating quiz:", error);
+      toast.error("Failed to create quiz");
     }
   };
 
@@ -299,8 +406,10 @@ const Quizzes = () => {
       try {
         await deleteDoc(doc(quizzesCollectionRef, quizId));
         setQuizList(quizList.filter(quiz => quiz.id !== quizId));
+        toast.success("Quiz deleted successfully!");
       } catch (error) {
         console.error("Error deleting quiz:", error);
+        toast.error("Failed to delete quiz");
       }
     }
   };
@@ -313,13 +422,15 @@ const Quizzes = () => {
       category: "General",
       passingScore: 70,
       status: "Draft",
-      questionsPerQuiz: 10
+      questionsPerQuiz: 10,
+      timeLimit: 30
     });
     setQuestions([]);
     setCurrentQuestion({
       text: "",
       options: ["", "", "", ""],
       correctAnswer: 0,
+      marks: 1
     });
   };
 
@@ -377,6 +488,9 @@ const Quizzes = () => {
                 </span>
                 <span>{quiz.totalQuestions} questions in pool ({quiz.questionsPerQuiz || 10} per attempt)</span>
               </div>
+              <div className="mt-2 text-xs">
+                <span className="font-medium">Time Limit:</span> {quiz.timeLimit || 30} mins
+              </div>
             </div>
             <div className="p-4 flex justify-end gap-2">
               {userRole === "Employee" ? (
@@ -409,12 +523,21 @@ const Quizzes = () => {
       {showQuizModal && currentQuiz && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
-            <div className="p-4 border-b">
-              <h3 className="font-bold text-lg">{currentQuiz.title}</h3>
+            <div className="p-4 border-b flex justify-between items-center">
+              <div>
+                <h3 className="font-bold text-lg">{currentQuiz.title}</h3>
+                {!score && (
+                  <p className="text-sm text-gray-600">
+                    Question {currentQuestionIndex + 1} of {quizQuestions.length}
+                  </p>
+                )}
+              </div>
               {!score && (
-                <p className="text-sm text-gray-600">
-                  Question {currentQuestionIndex + 1} of {quizQuestions.length}
-                </p>
+                <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  timeLeft < 60 ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
+                }`}>
+                  {formatTime(timeLeft)}
+                </div>
               )}
             </div>
 
@@ -428,7 +551,10 @@ const Quizzes = () => {
                     {score.percentage}% {score.passed ? "✓" : "✗"}
                   </div>
                   <p>
-                    You answered {score.correct} of {score.total} questions correctly
+                    You scored {score.correct} out of {score.total} marks
+                  </p>
+                  <p>
+                    Time taken: {Math.floor(score.timeTaken / 60)}m {score.timeTaken % 60}s
                   </p>
                   {score.passed && (
                     <p className="text-blue-600 font-medium">
@@ -446,6 +572,11 @@ const Quizzes = () => {
                 <>
                   <p className="font-medium mb-4">
                     {quizQuestions[currentQuestionIndex]?.text}
+                    {quizQuestions[currentQuestionIndex]?.marks > 1 && (
+                      <span className="text-sm text-gray-500 ml-2">
+                        ({quizQuestions[currentQuestionIndex]?.marks} marks)
+                      </span>
+                    )}
                   </p>
                   <div className="space-y-2">
                     {quizQuestions[currentQuestionIndex]?.options.map((option, idx) => (
@@ -601,6 +732,20 @@ const Quizzes = () => {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
+                    <label className="block font-medium mb-1">Time Limit (minutes)*</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="180"
+                      className="w-full p-2 border rounded"
+                      value={quizForm.timeLimit}
+                      onChange={(e) => setQuizForm({
+                        ...quizForm, 
+                        timeLimit: parseInt(e.target.value) || 30
+                      })}
+                    />
+                  </div>
+                  <div>
                     <label className="block font-medium mb-1">Status*</label>
                     <select
                       className="w-full p-2 border rounded"
@@ -675,6 +820,21 @@ const Quizzes = () => {
                     ))}
                   </div>
 
+                  <div className="mb-4">
+                    <label className="block font-medium mb-1">Marks for this question*</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="10"
+                      className="w-full p-2 border rounded"
+                      value={currentQuestion.marks}
+                      onChange={(e) => setCurrentQuestion({
+                        ...currentQuestion,
+                        marks: parseInt(e.target.value) || 1
+                      })}
+                    />
+                  </div>
+
                   <button
                     onClick={addQuestion}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
@@ -693,7 +853,7 @@ const Quizzes = () => {
                           <div>
                             <span className="font-medium">{i + 1}.</span> {q.text}
                             <div className="text-sm text-gray-600 mt-1">
-                              Correct: {String.fromCharCode(65 + q.correctAnswer)}
+                              Correct: {String.fromCharCode(65 + q.correctAnswer)} | Marks: {q.marks}
                             </div>
                           </div>
                           <button
