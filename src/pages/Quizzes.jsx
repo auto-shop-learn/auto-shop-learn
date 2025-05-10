@@ -1,14 +1,24 @@
 import { useState, useEffect } from "react";
-import { db, auth } from "../config/firebase";
-import {
-  collection, getDocs, doc, getDoc,
-  addDoc, setDoc, deleteDoc, updateDoc,
-  query, where, orderBy, serverTimestamp
+import { 
+  collection, 
+  getDocs, 
+  doc, 
+  getDoc, 
+  addDoc, 
+  setDoc, 
+  deleteDoc, 
+  updateDoc,
+  query, 
+  where, 
+  orderBy, 
+  serverTimestamp 
 } from "firebase/firestore";
+import { db, auth } from "../config/firebase";
 import { v4 as uuidv4 } from "uuid";
 import DeleteIcon from "../assets/svg/deleteIcon.svg?react";
 import Logo from "../assets/images/logo2.png";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Quizzes = () => {
   const navigate = useNavigate();
@@ -173,6 +183,7 @@ const Quizzes = () => {
       }
     } catch (error) {
       console.error("Error saving quiz results:", error);
+      toast.error("Failed to save quiz results");
     }
   };
 
@@ -475,16 +486,14 @@ const Quizzes = () => {
                 {currentQuestionIndex < quizQuestions.length - 1 ? (
                   <button
                     onClick={() => setCurrentQuestionIndex(prev => prev + 1)}
-                    disabled={!userAnswers[quizQuestions[currentQuestionIndex].id]}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                   >
                     Next
                   </button>
                 ) : (
                   <button
                     onClick={submitQuiz}
-                    disabled={!userAnswers[quizQuestions[currentQuestionIndex].id]}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
                   >
                     Submit Quiz
                   </button>

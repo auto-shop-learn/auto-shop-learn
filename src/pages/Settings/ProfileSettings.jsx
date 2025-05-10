@@ -24,14 +24,16 @@ const ProfileSettings = () => {
           const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
           if (userDoc.exists()) {
             const data = userDoc.data();
+            // Get display name from auth first, then fallback to Firestore data
+            const displayName = auth.currentUser.displayName || data.displayName || "";
             setProfileData({
-              displayName: data.displayName || "",
-              email: data.email || "",
+              displayName: displayName,
+              email: data.email || auth.currentUser.email || "",
               department: data.department || "",
               position: data.position || "",
               phoneNumber: data.phoneNumber || "",
               bio: data.bio || "",
-              profilePicture: data.photoURL || null
+              profilePicture: data.photoURL || auth.currentUser.photoURL || null
             });
           }
         }
@@ -93,13 +95,29 @@ const ProfileSettings = () => {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-bold mb-6">Profile Settings</h2>
+    <div className="space-y-8">
+      <div className="flex items-center space-x-4 mb-8">
+        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center text-3xl">
+          {profileData.profilePicture ? (
+            <img
+              src={profileData.profilePicture}
+              alt="Profile"
+              className="w-full h-full rounded-full object-cover"
+            />
+          ) : (
+            profileData.displayName?.charAt(0) || "👤"
+          )}
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">{profileData.displayName || "Your Profile"}</h2>
+          <p className="text-gray-500">{profileData.position || "No position set"}</p>
+        </div>
+      </div>
       
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               Full Name
             </label>
             <input
@@ -107,28 +125,29 @@ const ProfileSettings = () => {
               name="displayName"
               value={profileData.displayName}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               required
+              placeholder="Enter your full name"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               Email
             </label>
             <input
               type="email"
               value={profileData.email}
-              className="w-full p-2 border rounded bg-gray-50"
+              className="w-full p-2.5 border border-gray-300 rounded-lg bg-gray-50"
               disabled
             />
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500">
               Email cannot be changed
             </p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               Department
             </label>
             <input
@@ -136,12 +155,13 @@ const ProfileSettings = () => {
               name="department"
               value={profileData.department}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter your department"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               Position
             </label>
             <input
@@ -149,12 +169,13 @@ const ProfileSettings = () => {
               name="position"
               value={profileData.position}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter your position"
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-1">
+            <label className="block text-sm font-medium text-gray-700">
               Phone Number
             </label>
             <input
@@ -162,13 +183,14 @@ const ProfileSettings = () => {
               name="phoneNumber"
               value={profileData.phoneNumber}
               onChange={handleInputChange}
-              className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+              placeholder="Enter your phone number"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-1">
+          <label className="block text-sm font-medium text-gray-700">
             Bio
           </label>
           <textarea
@@ -176,18 +198,28 @@ const ProfileSettings = () => {
             value={profileData.bio}
             onChange={handleInputChange}
             rows={4}
-            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
             placeholder="Tell us about yourself..."
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-4">
           <button
             type="submit"
             disabled={saving}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+            className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors duration-200 flex items-center space-x-2"
           >
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <span>💾</span>
+                <span>Save Changes</span>
+              </>
+            )}
           </button>
         </div>
       </form>

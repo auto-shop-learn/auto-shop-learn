@@ -11,9 +11,10 @@ import {
   doc,
   getDoc
 } from "firebase/firestore";
-import { Navigate } from "react-router-dom";
+import { Navigate, Link } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; // Import the Sidebar component
 import Logo from "../assets/images/logo2.png"; // Import the Logo image
+
 
 const Dashboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -73,9 +74,11 @@ const Dashboard = () => {
 
         // Role-specific data
         if (userData.role === "Educator") {
-          const [usersSnapshot, completionsSnapshot] = await Promise.all([
+          const [usersSnapshot, completionsSnapshot, certificatesSnapshot, gradesSnapshot] = await Promise.all([
             getDocs(collection(db, "users")),
-            getDocs(collection(db, "completions"))
+            getDocs(collection(db, "completions")),
+            getDocs(collection(db, "certificates")),
+            getDocs(collection(db, "grades"))
           ]);
 
           // Get employee progress data
@@ -84,38 +87,91 @@ const Dashboard = () => {
             .filter(doc => doc.data().role === "Employee")
             .map(doc => ({ id: doc.id, ...doc.data() }));
 
+          // Calculate average score from grades
+          let totalScore = 0;
+          let gradeCount = 0;
+          gradesSnapshot.docs.forEach(doc => {
+            const grade = doc.data().score;
+            if (grade) {
+              totalScore += grade;
+              gradeCount++;
+            }
+          });
+          const averageScore = gradeCount > 0 ? Math.round((totalScore / gradeCount) * 100) / 100 : 0;
+
           for (const employee of employees) {
-            const employeeCompletions = await getDocs(query(
-              collection(db, "completions"),
-              where("userId", "==", employee.id)
-            ));
+            const [employeeCompletions, employeeGrades] = await Promise.all([
+              getDocs(query(
+                collection(db, "completions"),
+                where("userId", "==", employee.id)
+              )),
+              getDocs(query(
+                collection(db, "grades"),
+                where("userId", "==", employee.id)
+              ))
+            ]);
+
+            // Calculate employee's average score
+            let employeeTotalScore = 0;
+            let employeeGradeCount = 0;
+            employeeGrades.docs.forEach(doc => {
+              const grade = doc.data().score;
+              if (grade) {
+                employeeTotalScore += grade;
+                employeeGradeCount++;
+              }
+            });
+            const employeeAverageScore = employeeGradeCount > 0 ? Math.round((employeeTotalScore / employeeGradeCount) * 100) / 100 : 0;
+
             progressData.push({
               ...employee,
-              completions: employeeCompletions.size
+              completions: employeeCompletions.size,
+              averageScore: employeeAverageScore
             });
           }
 
           setStats({
             totalTrainings: materialsSnapshot.size,
             completedTrainings: completionsSnapshot.size,
-            averageScore: 0, // Would calculate from grades
-            certificatesEarned: 0, // Would query certificates
+            averageScore: averageScore,
+            certificatesEarned: certificatesSnapshot.size,
             employeesEnrolled: employees.length
           });
           setEmployeeProgress(progressData);
         } 
         else if (userData.role === "Employee") {
-          const completionsQuery = query(
-            collection(db, "completions"),
-            where("userId", "==", currentUser.uid)
-          );
-          const completionsSnapshot = await getDocs(completionsQuery);
+          const [completionsSnapshot, certificatesSnapshot, gradesSnapshot] = await Promise.all([
+            getDocs(query(
+              collection(db, "completions"),
+              where("userId", "==", currentUser.uid)
+            )),
+            getDocs(query(
+              collection(db, "certificates"),
+              where("userId", "==", currentUser.uid)
+            )),
+            getDocs(query(
+              collection(db, "grades"),
+              where("userId", "==", currentUser.uid)
+            ))
+          ]);
+
+          // Calculate average score
+          let totalScore = 0;
+          let gradeCount = 0;
+          gradesSnapshot.docs.forEach(doc => {
+            const grade = doc.data().score;
+            if (grade) {
+              totalScore += grade;
+              gradeCount++;
+            }
+          });
+          const averageScore = gradeCount > 0 ? Math.round((totalScore / gradeCount) * 100) / 100 : 0;
 
           setStats({
             totalTrainings: materialsSnapshot.size,
             completedTrainings: completionsSnapshot.size,
-            averageScore: 0, // Would calculate from grades
-            certificatesEarned: 0 // Would query certificates
+            averageScore: averageScore,
+            certificatesEarned: certificatesSnapshot.size
           });
         }
 
@@ -189,9 +245,9 @@ const Dashboard = () => {
           <h4 className="font-semibold">{material.title}</h4>
           <p className="text-sm text-gray-600 mt-1 line-clamp-2">{material.description}</p>
           {userData.role === "Employee" && (
-            <button className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
+            <Link to="/learning-materials" className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 inline-block">
               Start Training
-            </button>
+            </Link>
           )}
           {userData.role === "Educator" && (
             <div className="mt-2 flex space-x-2">
@@ -231,21 +287,21 @@ const Dashboard = () => {
           </div>
           
           {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <StatCard 
-              title="Total Trainings" 
+              title="Total Training Materials" 
               value={stats.totalTrainings} 
-              icon="📚" 
+              icon="📋" 
               color="blue" 
             />
             <StatCard 
-              title="Completed" 
+              title="Completed Videos" 
               value={stats.completedTrainings} 
               icon="✅" 
               color="green" 
             />
             <StatCard 
-              title="Avg. Score" 
+              title="Avg. Quiz Score" 
               value={`${stats.averageScore}%`} 
               icon="📊" 
               color="purple" 
@@ -255,12 +311,6 @@ const Dashboard = () => {
               value={stats.certificatesEarned} 
               icon="🏆" 
               color="orange" 
-            />
-            <StatCard 
-              title="Employees" 
-              value={stats.employeesEnrolled} 
-              icon="👥" 
-              color="red" 
             />
           </div>
 
@@ -331,19 +381,19 @@ const Dashboard = () => {
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <StatCard 
-              title="Assigned" 
+              title="Total Training Materials" 
               value={stats.totalTrainings} 
               icon="📋" 
               color="blue" 
             />
             <StatCard 
-              title="Completed" 
+              title="Completed Videos" 
               value={stats.completedTrainings} 
               icon="✅" 
               color="green" 
             />
             <StatCard 
-              title="Avg. Score" 
+              title="Avg. Quiz Score" 
               value={`${stats.averageScore}%`} 
               icon="📊" 
               color="purple" 

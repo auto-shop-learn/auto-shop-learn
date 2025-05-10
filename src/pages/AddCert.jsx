@@ -30,6 +30,7 @@ const AddCert = () => {
   const [description, setDescription] = useState("Official Training Completion Certificate")
   const [loading, setLoading] = useState(false)
   const [progress, setProgress] = useState(0)
+  const [hasCompletedVideos, setHasCompletedVideos] = useState(false)
   const [certDate] = useState(new Date().toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -38,24 +39,43 @@ const AddCert = () => {
   
   const certificateRef = useRef(null)
 
-  // Fetch user data and set states
+  // Fetch user data and check video completion
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser)
         
-        // Fetch user's name from Firestore
         try {
+          // Fetch user's name and role from Firestore
           const userDoc = await getDoc(doc(db, "users", currentUser.uid))
           if (userDoc.exists()) {
             const userData = userDoc.data()
+            if (userData.role !== "Employee") {
+              toast.error("Only employees can generate certificates")
+              navigate("/certificates")
+              return
+            }
             setUserName(userData.name || "")
-            // Set a default title based on the user's name
             setTitle(`${userData.name || "Employee"} Training Certificate`)
+          }
+
+          // Check video completion
+          const progressDoc = await getDoc(doc(db, "userProgress", currentUser.uid))
+          if (progressDoc.exists()) {
+            const progress = progressDoc.data()
+            const allVideosCompleted = progress.completedVideos?.length > 0 && 
+              progress.completedVideos.every(video => video.completed)
+            setHasCompletedVideos(allVideosCompleted)
+            
+            if (!allVideosCompleted) {
+              toast.error("You must complete all required videos before generating a certificate")
+              navigate("/certificates")
+            }
           }
         } catch (error) {
           console.error("Error fetching user data:", error)
           toast.error("Could not fetch user information")
+          navigate("/certificates")
         }
       } else {
         navigate("/login")
@@ -108,6 +128,11 @@ const AddCert = () => {
     
     if (!userName) {
       toast.error("Could not find your name. Please update your profile.")
+      return
+    }
+
+    if (!hasCompletedVideos) {
+      toast.error("You must complete all required videos before generating a certificate")
       return
     }
     
@@ -244,8 +269,8 @@ const AddCert = () => {
           
           <button
             type="submit"
-            disabled={loading}
-            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+            disabled={loading || !hasCompletedVideos}
+            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             {loading ? "Generating..." : "Generate Certificate"}
           </button>

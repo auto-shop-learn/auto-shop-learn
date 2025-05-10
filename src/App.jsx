@@ -20,6 +20,7 @@ import AddGrade from "./pages/AddGrade";
 import AddMaterial from "./pages/AddMaterial";
 import AddCert from "./pages/AddCert";
 import Settings from "./pages/Settings";
+import EmployeeManagement from "./pages/EmployeeManagement";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -107,6 +108,10 @@ function App() {
         <Route 
           path="/add-cert" 
           element={currentUser && userRole === "Employee" ? <AddCert /> : <Navigate to="/certificates" replace />} 
+        />
+        <Route 
+          path="/employee-management" 
+          element={currentUser && userRole === "Educator" ? <EmployeeManagement /> : <Navigate to="/dashboard" replace />} 
         />
         <Route 
           path="/settings/*" 

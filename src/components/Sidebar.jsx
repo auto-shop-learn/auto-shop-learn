@@ -8,12 +8,27 @@ import CertIcon from "../assets/svg/certIcon.svg?react";
 import BrainIcon from "../assets/svg/brainIcon.svg?react";
 import LogoutIcon from "../assets/svg/logoutIcon.svg?react";
 import { Link, useLocation } from "react-router-dom";
-import { auth } from "../config/firebase";
+import { auth, db } from "../config/firebase";
 import { signOut } from "firebase/auth";
 import { toast } from "react-toastify";
+import { useState, useEffect } from "react";
+import { doc, getDoc } from "firebase/firestore";
 
 const Sidebar = () => {
   const location = useLocation();
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (auth.currentUser) {
+        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
+      }
+    };
+    fetchUserRole();
+  }, []);
 
   const logOut = async () => {
     try {
@@ -81,13 +96,24 @@ const Sidebar = () => {
         </li>
         <li className="mb-4">
           <Link
-            to="/materials"
-            className={location.pathname === "/materials" ? linkClass : defaultClass}
+            to="/learning-materials"
+            className={location.pathname === "/learning-materials" ? linkClass : defaultClass}
           >
             <BrainIcon fill="#ffffff" width="21px" height="21px" />
             <span className="ml-2">Learning Materials</span>
           </Link>
         </li>
+        {userRole === "Educator" && (
+          <li className="mb-4">
+            <Link
+              to="/employee-management"
+              className={location.pathname === "/employee-management" ? linkClass : defaultClass}
+            >
+              <SchoolIcon fill="#ffffff" width="29px" height="29px" />
+              <span className="ml-2">Employee Management</span>
+            </Link>
+          </li>
+        )}
         <li className="mb-4">
           <Link
             to="/settings"

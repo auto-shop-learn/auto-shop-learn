@@ -11,12 +11,15 @@ import {
   orderBy,
   doc,
   updateDoc,
-  getDoc
+  getDoc,
+  where
 } from "firebase/firestore"
+import { toast } from "react-toastify"
 
 const Certificates = () => {
   const [certs, setCerts] = useState([])
   const [userRole, setUserRole] = useState(null)
+  const [hasCompletedVideos, setHasCompletedVideos] = useState(false)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -33,8 +36,11 @@ const Certificates = () => {
 
   useEffect(() => {
     const fetchCerts = async () => {
+      if (!auth.currentUser) return
+
       const q = query(
         collection(db, "certificates"),
+        where("uploadedBy", "==", auth.currentUser.uid),
         orderBy("createdAt", "desc")
       )
       const snap = await getDocs(q)
@@ -49,6 +55,27 @@ const Certificates = () => {
     fetchCerts()
   }, [])
 
+  useEffect(() => {
+    const checkVideoCompletion = async () => {
+      if (!auth.currentUser) return
+
+      try {
+        // Get user's video progress
+        const progressDoc = await getDoc(doc(db, "userProgress", auth.currentUser.uid))
+        if (progressDoc.exists()) {
+          const progress = progressDoc.data()
+          // Check if all required videos are completed
+          const allVideosCompleted = progress.completedVideos?.length > 0 && 
+            progress.completedVideos.every(video => video.completed)
+          setHasCompletedVideos(allVideosCompleted)
+        }
+      } catch (error) {
+        console.error("Error checking video completion:", error)
+      }
+    }
+    checkVideoCompletion()
+  }, [])
+
   // toggle the downloaded flag in Firestore and local state
   const toggleDownloaded = async (id, val) => {
     const ref = doc(db, "certificates", id)
@@ -58,6 +85,14 @@ const Certificates = () => {
     )
   }
 
+  const handleGenerateCertificate = () => {
+    if (!hasCompletedVideos) {
+      toast.error("You must complete all required videos before generating a certificate")
+      return
+    }
+    navigate("/add-cert")
+  }
+
   return (
     <div className="flex">
       <Sidebar />
@@ -65,10 +100,10 @@ const Certificates = () => {
         <div className="mb-6">
           <img src={Logo} alt="Logo" className="h-12 mb-4" />
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-semibold">Certificates</h1>
+            <h1 className="text-2xl font-semibold">My Certificates</h1>
             {userRole === "Employee" && (
               <button
-                onClick={() => navigate("/add-cert")}
+                onClick={handleGenerateCertificate}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
               >
                 Generate Certificate
