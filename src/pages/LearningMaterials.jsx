@@ -109,12 +109,14 @@ const LearningMaterials = () => {
           <img src={Logo} alt="Logo" className="h-12 mb-4" />
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">Learning Materials</h1>
-            <button
-              onClick={() => navigate("/add-material")}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              + Add Notes
-            </button>
+            {userRole === "Educator" && (
+              <button
+                onClick={() => navigate("/add-material")}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                + Add Notes
+              </button>
+            )}
           </div>
         </div>
 

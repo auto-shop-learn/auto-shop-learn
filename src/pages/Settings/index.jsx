@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { useNavigate, Link, Routes, Route } from "react-router-dom";
 import { db, auth } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Logo from "../../assets/images/logo2.png";
-import SettingsGif from "../../assets/images/settings3.gif";
+import SettingsGif from "../../assets/images/settings2.gif";
 
-// Import settings components
-import ProfileSettings from "./ProfileSettings";
-import SecuritySettings from "./SecuritySettings";
-import NotificationSettings from "./NotificationSettings";
-import Preferences from "./Preferences";
-import EducatorSettings from "./EducatorSettings";
+// Lazy load settings components
+const ProfileSettings = lazy(() => import("./ProfileSettings"));
+const SecuritySettings = lazy(() => import("./SecuritySettings"));
+const NotificationSettings = lazy(() => import("./NotificationSettings"));
+const Preferences = lazy(() => import("./Preferences"));
+const EducatorSettings = lazy(() => import("./EducatorSettings"));
 
 const Settings = () => {
   const [userRole, setUserRole] = useState(null);
@@ -90,29 +90,35 @@ const Settings = () => {
 
       {/* Settings Content */}
       <div className="flex-1 p-8 overflow-y-auto">
-        <Routes>
-          <Route path="profile" element={<ProfileSettings />} />
-          <Route path="security" element={<SecuritySettings />} />
-          <Route path="notifications" element={<NotificationSettings />} />
-          <Route path="preferences" element={<Preferences />} />
-          {userRole === "educator" && (
-            <Route path="educator" element={<EducatorSettings />} />
-          )}
-          <Route
-            path="*"
-            element={
-              <div className="text-center py-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">
-                  Welcome to Settings
-                </h2>
-                <p className="text-gray-600">
-                  Please select a setting category from the sidebar to get started.
-                </p>
-                <img src={SettingsGif} alt="Settings" className="mx-auto mt-20 mb-6 w-20" />
-              </div>
-            }
-          />
-        </Routes>
+        <Suspense fallback={
+          <div className="flex justify-center items-center h-full">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+          </div>
+        }>
+          <Routes>
+            <Route path="profile" element={<ProfileSettings />} />
+            <Route path="security" element={<SecuritySettings />} />
+            <Route path="notifications" element={<NotificationSettings />} />
+            <Route path="preferences" element={<Preferences />} />
+            {userRole === "educator" && (
+              <Route path="educator" element={<EducatorSettings />} />
+            )}
+            <Route
+              path="*"
+              element={
+                <div className="text-center py-8">
+                  <h2 className="text-2xl font-bold text-gray-800 mb-4">
+                    Welcome to Settings
+                  </h2>
+                  <p className="text-gray-600">
+                    Please select a setting category from the sidebar to get started.
+                  </p>
+                  <img src={SettingsGif} alt="Settings" className="mx-auto mt-20 mb-6 w-18" />
+                </div>
+              }
+            />
+          </Routes>
+        </Suspense>
       </div>
     </div>
   );

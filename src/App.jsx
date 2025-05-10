@@ -2,8 +2,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect, useState } from "react";
-import { auth } from "./config/firebase";
+import { auth, db } from "./config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 // Pages
 import SignIn from "./pages/SignIn";
@@ -16,17 +17,29 @@ import Certificates from "./pages/Certificates";
 import LearningMaterials from "./pages/LearningMaterials";
 import Grades from "./pages/Grades";
 import AddGrade from "./pages/AddGrade";
+import AddMaterial from "./pages/AddMaterial";
+import AddCert from "./pages/AddCert";
 import Settings from "./pages/Settings";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+        // Fetch user role
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
+      } else {
+        setCurrentUser(null);
+        setUserRole(null);
+      }
       setLoading(false);
-      console.log("Auth state changed:", user);
     });
 
     return unsubscribe;
@@ -64,19 +77,19 @@ function App() {
           element={currentUser ? <Dashboard /> : <Navigate to="/sign-in" replace />} 
         />
         <Route 
-          path="/quiz" 
-          element={currentUser ? <Quiz /> : <Navigate to="/sign-in" replace />} 
-        />
-        <Route 
           path="/videos" 
           element={currentUser ? <Videos /> : <Navigate to="/sign-in" replace />} 
+        />
+        <Route 
+          path="/quiz" 
+          element={currentUser ? <Quiz /> : <Navigate to="/sign-in" replace />} 
         />
         <Route 
           path="/certificates" 
           element={currentUser ? <Certificates /> : <Navigate to="/sign-in" replace />} 
         />
         <Route 
-          path="/materials" 
+          path="/learning-materials" 
           element={currentUser ? <LearningMaterials /> : <Navigate to="/sign-in" replace />} 
         />
         <Route 
@@ -85,7 +98,15 @@ function App() {
         />
         <Route 
           path="/add-grade" 
-          element={currentUser ? <AddGrade /> : <Navigate to="/sign-in" replace />} 
+          element={currentUser && userRole === "Educator" ? <AddGrade /> : <Navigate to="/grades" replace />} 
+        />
+        <Route 
+          path="/add-material" 
+          element={currentUser && userRole === "Educator" ? <AddMaterial /> : <Navigate to="/learning-materials" replace />} 
+        />
+        <Route 
+          path="/add-cert" 
+          element={currentUser && userRole === "Employee" ? <AddCert /> : <Navigate to="/certificates" replace />} 
         />
         <Route 
           path="/settings/*" 

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Sidebar from "../components/Sidebar"
 import Logo from "../assets/images/logo2.png"
-import { db } from "../config/firebase"
+import { db, auth } from "../config/firebase"
 import {
   collection,
   getDocs,
@@ -11,11 +11,25 @@ import {
   orderBy,
   doc,
   updateDoc,
+  getDoc
 } from "firebase/firestore"
 
 const Certificates = () => {
   const [certs, setCerts] = useState([])
+  const [userRole, setUserRole] = useState(null)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (auth.currentUser) {
+        const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid))
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role)
+        }
+      }
+    }
+    fetchUserData()
+  }, [])
 
   useEffect(() => {
     const fetchCerts = async () => {
@@ -52,12 +66,14 @@ const Certificates = () => {
           <img src={Logo} alt="Logo" className="h-12 mb-4" />
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">Certificates</h1>
-            <button
-              onClick={() => navigate("/add-cert")}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            >
-              + Add Certificate
-            </button>
+            {userRole === "Employee" && (
+              <button
+                onClick={() => navigate("/add-cert")}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              >
+                Generate Certificate
+              </button>
+            )}
           </div>
         </div>
 
