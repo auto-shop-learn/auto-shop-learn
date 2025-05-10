@@ -1,13 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-// import ReactDOM from 'react-dom';
-import App from './App.jsx'
-import { BrowserRouter as Router } from 'react-router-dom'; // Import Router
-import { AppContextProvider } from './AppContext'; // Import your context provider
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { AppContextProvider } from './AppContext';
 import 'tailwindcss/tailwind.css';
-import './index.css'
+import './index.css';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
     <Router>
       <AppContextProvider>
@@ -15,6 +15,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </AppContextProvider>
     </Router>
   </React.StrictMode>
-)
-
-
+);
