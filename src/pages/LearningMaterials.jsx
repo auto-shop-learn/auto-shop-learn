@@ -11,7 +11,9 @@ import {
   orderBy,
   doc,
   updateDoc,
+  deleteDoc
 } from "firebase/firestore"
+import { toast } from "react-toastify"
 
 const LearningMaterials = () => {
   const [materials, setMaterials] = useState([])
@@ -58,6 +60,19 @@ const LearningMaterials = () => {
     )
   }
 
+  const handleDeleteMaterial = async (id) => {
+    if (window.confirm("Are you sure you want to delete this material?")) {
+      try {
+        await deleteDoc(doc(db, "learningMaterials", id));
+        setMaterials(materials.filter(material => material.id !== id));
+        toast.success("Material deleted successfully");
+      } catch (error) {
+        console.error("Error deleting material:", error);
+        toast.error("Failed to delete material");
+      }
+    }
+  };
+
   const StarRating = ({ id, rating }) => (
     <div className="flex items-center mt-2">
       <span className="mr-2 text-sm text-gray-600">Rating:</span>
@@ -98,7 +113,7 @@ const LearningMaterials = () => {
               onClick={() => navigate("/add-material")}
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              + Add Material
+              + Add Notes
             </button>
           </div>
         </div>
@@ -111,19 +126,30 @@ const LearningMaterials = () => {
             >
               <div className="flex justify-between items-center mb-2">
                 <h2 className="font-medium">{m.title}</h2>
-                <label className="inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                    checked={m.read}
-                    onChange={(e) =>
-                      handleReadToggle(m.id, e.target.checked)
-                    }
-                  />
-                  <span className="ml-2 text-sm text-gray-700">
-                    Read
-                  </span>
-                </label>
+                <div className="flex items-center gap-4">
+                  <label className="inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                      checked={m.read}
+                      onChange={(e) =>
+                        handleReadToggle(m.id, e.target.checked)
+                      }
+                    />
+                    <span className="ml-2 text-sm text-gray-700">
+                      Read
+                    </span>
+                  </label>
+                  <button
+                    onClick={() => handleDeleteMaterial(m.id)}
+                    className="text-red-600 hover:text-red-800 p-1"
+                    title="Delete Material"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               <p className="text-sm text-gray-700 mb-2">

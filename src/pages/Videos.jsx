@@ -12,7 +12,9 @@ import {
   orderBy,
   doc,
   updateDoc,
+  deleteDoc
 } from "firebase/firestore"
+import { toast } from "react-toastify"
 
 const Videos = () => {
   const [videos, setVideos] = useState([])
@@ -74,6 +76,19 @@ const Videos = () => {
     }
   }
 
+  const handleDeleteVideo = async (videoId) => {
+    if (window.confirm("Are you sure you want to delete this video?")) {
+      try {
+        await deleteDoc(doc(db, "videos", videoId));
+        setVideos(videos.filter(video => video.id !== videoId));
+        toast.success("Video deleted successfully");
+      } catch (error) {
+        console.error("Error deleting video:", error);
+        toast.error("Failed to delete video");
+      }
+    }
+  };
+
   // Star rating component
   const StarRating = ({ videoId, currentRating }) => {
     return (
@@ -127,7 +142,7 @@ const Videos = () => {
             <div key={v.id} className="border p-4 rounded-lg shadow-sm">
               <div className="flex justify-between mb-2">
                 <h2 className="font-medium">{v.title}</h2>
-                <div className="flex items-center">
+                <div className="flex items-center gap-4">
                   <label className="inline-flex items-center cursor-pointer mr-4">
                     <input
                       type="checkbox"
@@ -141,6 +156,15 @@ const Videos = () => {
                       Completed
                     </span>
                   </label>
+                  <button
+                    onClick={() => handleDeleteVideo(v.id)}
+                    className="text-red-600 hover:text-red-800 p-1"
+                    title="Delete Video"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </button>
                 </div>
               </div>
               <video src={v.url} controls className="w-full max-w-xl" />
