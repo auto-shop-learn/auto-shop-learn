@@ -349,85 +349,92 @@ const Certificates = () => {
   }
 
   return (
-    <>
-      <div className="logo my-4">
-        <img src={Logo} alt="Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <div className="flex justify-between items-center mb-6">
+    <div className="flex h-screen overflow-hidden">
+      {/* Fixed Sidebar */}
+      <Sidebar />
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto p-6">
+        {/* Header with Logo */}
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center">
+            <img 
+              src={Logo} 
+              alt="Logo" 
+              className="h-12 mr-4"
+            />
             <h1 className="text-2xl font-semibold">
               {userRole === "Employee" ? "My Certificates" : "Certificates"}
             </h1>
-            {userRole === "Employee" && allVideosCompleted && (
-              <button
-                onClick={handleGenerateCertificate}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-              >
-                Generate Certificate
-              </button>
-            )}
           </div>
+          {userRole === "Employee" && allVideosCompleted && (
+            <button
+              onClick={handleGenerateCertificate}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              Generate Certificate
+            </button>
+          )}
+        </div>
 
-          <div className="space-y-6">
-            {certificates.map((cert) => (
-              <div key={cert.id} className="border p-4 rounded-lg shadow-sm">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h2 className="font-bold text-lg">Training Completion Certificate</h2>
-                    <p className="text-sm text-gray-600">
-                      Awarded to: {cert.employeeName}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Department: {cert.employeeDepartment}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Completed on: {cert.completionDate?.toLocaleDateString()}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Videos Completed: {cert.videoCount}
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      Verification Code: {cert.verificationCode}
-                    </p>
-                  </div>
+        {/* Certificates List */}
+        <div className="space-y-6">
+          {certificates.map((cert) => (
+            <div key={cert.id} className="border p-4 rounded-lg shadow-sm">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h2 className="font-bold text-lg">Training Completion Certificate</h2>
+                  <p className="text-sm text-gray-600">
+                    Awarded to: {cert.employeeName}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Department: {cert.employeeDepartment}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Completed on: {cert.completionDate?.toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Videos Completed: {cert.videoCount}
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Verification Code: {cert.verificationCode}
+                  </p>
                 </div>
+              </div>
+              
+              <div className="mt-4 flex space-x-4">
+                <PDFDownloadLink
+                  document={<CertificateTemplate certificate={cert} />}
+                  fileName={`${cert.employeeName}_Training_Certificate.pdf`}
+                  className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+                >
+                  {({ loading }) => (loading ? 'Preparing...' : 'Download PDF')}
+                </PDFDownloadLink>
                 
-                <div className="mt-4 flex space-x-4">
-                  <PDFDownloadLink
-                    document={<CertificateTemplate certificate={cert} />}
-                    fileName={`${cert.employeeName}_Training_Certificate.pdf`}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                  >
-                    {({ loading }) => (loading ? 'Preparing...' : 'Download PDF')}
-                  </PDFDownloadLink>
-                  
-                  <button
-                    onClick={() => navigate(`/certificates/view/${cert.id}`)}
-                    className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-                  >
-                    View Certificate
-                  </button>
-                </div>
+                <button
+                  onClick={() => navigate(`/certificates/view/${cert.id}`)}
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                >
+                  View Certificate
+                </button>
               </div>
-            ))}
+            </div>
+          ))}
 
-            {certificates.length === 0 && (
-              <div className="text-center py-10">
-                <p className="text-gray-500">
-                  {userRole === "Employee" 
-                    ? allVideosCompleted 
-                      ? "You can now generate your completion certificate"
-                      : "Complete all training videos to earn your certificate"
-                    : "No certificates found"}
-                </p>
-              </div>
-            )}
-          </div>
+          {certificates.length === 0 && (
+            <div className="text-center py-10">
+              <p className="text-gray-500">
+                {userRole === "Employee" 
+                  ? allVideosCompleted 
+                    ? "You can now generate your completion certificate"
+                    : "Complete all training videos to earn your certificate"
+                  : "No certificates found"}
+              </p>
+            </div>
+          )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

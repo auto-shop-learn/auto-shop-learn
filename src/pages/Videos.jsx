@@ -271,7 +271,7 @@ const Videos = () => {
     const certId = await generateCertificate();
     if (certId) {
       setShowCertificateButton(false);
-      navigate("/certificates");  // Updated navigation path
+      navigate("/certificates");
     }
   };
 
@@ -382,217 +382,217 @@ const Videos = () => {
   }
 
   return (
-    <>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-      <div className="logo mt-3 mb-6">
-        <img src={Logo} alt="Company Logo" width="300px" />
-      </div>
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold">
-              {selectedCourse ? selectedCourse.name : "Training Courses"}
-            </h1>
-            {userRole === "Educator" && (
-              <button
+    <div className="flex h-screen overflow-hidden">
+      {/* Fixed Sidebar */}
+      <Sidebar />
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+        <div className="logo mt-3 mb-6">
+          <img src={Logo} alt="Company Logo" width="300px" />
+        </div>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-semibold">
+            {selectedCourse ? selectedCourse.name : "Training Courses"}
+          </h1>
+          {userRole === "Educator" && (
+            <button
               onClick={() => navigate("/add-video")}
-              // Updated navigation path
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+            >
+              + Add Video
+            </button>
+          )}
+        </div>
+
+        {userRole === "Employee" && userProgress.allVideosCompleted && (
+          <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-lg">
+            <h3 className="font-bold">🎉 Training Complete!</h3>
+            <p>You've successfully finished all available training videos.</p>
+            {showCertificateButton && (
+              <button
+                onClick={handleGenerateCertificate}
+                className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
               >
-                + Add Video
+                Generate Completion Certificate
               </button>
             )}
           </div>
+        )}
 
-          {userRole === "Employee" && userProgress.allVideosCompleted && (
-            <div className="mb-6 p-4 bg-green-100 text-green-800 rounded-lg">
-              <h3 className="font-bold">🎉 Training Complete!</h3>
-              <p>You've successfully finished all available training videos.</p>
-              {showCertificateButton && (
-                <button
-                  onClick={handleGenerateCertificate}
-                  className="mt-3 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+        {!selectedCourse ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {courses.map((course) => {
+              const progress = getCourseProgress(course.id);
+              return (
+                <div 
+                  key={course.id} 
+                  className="border p-4 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer"
+                  onClick={() => setSelectedCourse(course)}
                 >
-                  Generate Completion Certificate
-                </button>
-              )}
-            </div>
-          )}
+                  <h2 className="font-bold text-lg mb-2">{course.name}</h2>
+                  <p className="text-sm text-gray-600 mb-3">
+                    {course.department} • {course.videos?.length || 0} videos
+                  </p>
+                  
+                  {userRole === "Employee" && (
+                    <>
+                      <div className="flex justify-between text-xs mb-1">
+                        <span>
+                          {progress.completed} of {progress.total} videos completed
+                        </span>
+                        <span>{Math.round(progress.progress)}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className={`h-2 rounded-full ${
+                            progress.allCompleted ? "bg-green-500" : "bg-blue-600"
+                          }`}
+                          style={{
+                            width: `${progress.progress}%`,
+                          }}
+                        ></div>
+                      </div>
+                      {progress.allCompleted && (
+                        <div className="mt-2 text-sm text-green-600">
+                          ✓ Course completed
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              );
+            })}
 
-          {!selectedCourse ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {courses.map((course) => {
-                const progress = getCourseProgress(course.id);
-                return (
-                  <div 
-                    key={course.id} 
-                    className="border p-4 rounded-lg shadow-sm hover:shadow-md transition cursor-pointer"
-                    onClick={() => setSelectedCourse(course)}
+            {courses.length === 0 && (
+              <div className="text-center py-10 col-span-full">
+                <p className="text-gray-500">
+                  {userRole === "Employee" 
+                    ? "No training courses available for your department yet." 
+                    : "No training courses available yet."}
+                </p>
+                {userRole === "Educator" && (
+                  <button
+                    onClick={() => navigate("/dashboard/add-video")}
+                    className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                   >
-                    <h2 className="font-bold text-lg mb-2">{course.name}</h2>
-                    <p className="text-sm text-gray-600 mb-3">
-                      {course.department} • {course.videos?.length || 0} videos
-                    </p>
-                    
+                    Upload First Video
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className="mb-6">
+              <button 
+                onClick={() => setSelectedCourse(null)}
+                className="flex items-center text-blue-600 hover:text-blue-800"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                </svg>
+                Back to Courses
+              </button>
+              <h2 className="text-xl font-semibold mt-2">{selectedCourse.name}</h2>
+              <p className="text-gray-600">{selectedCourse.description || "No description available"}</p>
+            </div>
+
+            <div className="space-y-6">
+              {videos
+                .filter(video => selectedCourse.videos?.includes(video.id))
+                .map((video) => (
+                  <div key={video.id} className="border p-4 rounded-lg shadow-sm">
+                    <div className="flex justify-between items-start mb-3">
+                      <div>
+                        <h2 className="font-bold text-lg">{video.title}</h2>
+                        <p className="text-sm text-gray-600">
+                          {video.department} • Uploaded by: {video.educatorName}
+                        </p>
+                      </div>
+                      {userRole === "Employee" && 
+                        userProgress.completedVideos?.includes(video.id) && (
+                        <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
+                          ✓ Completed
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mb-3 relative">
+                      <video
+                        ref={el => videoRefs.current[video.id] = el}
+                        src={video.url}
+                        controls
+                        className="w-full max-w-2xl mx-auto rounded-lg"
+                        onTimeUpdate={(e) => {
+                          if (userRole === "Employee") {
+                            const videoElement = e.target;
+                            const progress = videoElement.currentTime / videoElement.duration;
+                            updateVideoProgress(video.id, progress);
+                          }
+                        }}
+                      />
+                      <button
+                        onClick={() => toggleFullscreen(video.id)}
+                        className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded"
+                        title="Toggle Fullscreen"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5 9V7a1 1 0 011-1h2V4a1 1 0 011-1h2a1 1 0 011 1v2h2a1 1 0 011 1v2a1 1 0 01-1 1h-2v2a1 1 0 01-1 1H9a1 1 0 01-1-1v-2H6a1 1 0 01-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <StarRating
+                      videoId={video.id}
+                      currentRating={video.ratings || {}}
+                    />
+
                     {userRole === "Employee" && (
-                      <>
+                      <div className="mt-3">
                         <div className="flex justify-between text-xs mb-1">
                           <span>
-                            {progress.completed} of {progress.total} videos completed
+                            {Math.round(
+                              (userProgress.videoProgress?.[video.id] || 0) * 100
+                            )}% watched
                           </span>
-                          <span>{Math.round(progress.progress)}%</span>
+                          {userProgress.completedVideos?.includes(video.id) && (
+                            <span className="text-green-600">Completed</span>
+                          )}
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className={`h-2 rounded-full ${
-                              progress.allCompleted ? "bg-green-500" : "bg-blue-600"
-                            }`}
+                            className="bg-blue-600 h-2 rounded-full"
                             style={{
-                              width: `${progress.progress}%`,
+                              width: `${
+                                (userProgress.videoProgress?.[video.id] || 0) * 100
+                              }%`,
                             }}
                           ></div>
                         </div>
-                        {progress.allCompleted && (
-                          <div className="mt-2 text-sm text-green-600">
-                            ✓ Course completed
-                          </div>
-                        )}
-                      </>
+                      </div>
                     )}
                   </div>
-                );
-              })}
+                ))}
 
-              {courses.length === 0 && (
-                <div className="text-center py-10 col-span-full">
-                  <p className="text-gray-500">
-                    {userRole === "Employee" 
-                      ? "No training courses available for your department yet." 
-                      : "No training courses available yet."}
-                  </p>
+              {selectedCourse.videos?.length === 0 && (
+                <div className="text-center py-10">
+                  <p className="text-gray-500">No videos available in this course yet.</p>
                   {userRole === "Educator" && (
                     <button
-                      onClick={() => navigate("/dashboard/add-video")}  // Updated navigation path
+                      onClick={() => navigate("/dashboard/add-video")}
                       className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
                     >
-                      Upload First Video
+                      Add Video to Course
                     </button>
                   )}
                 </div>
               )}
             </div>
-          ) : (
-            <>
-              <div className="mb-6">
-                <button 
-                  onClick={() => setSelectedCourse(null)}
-                  className="flex items-center text-blue-600 hover:text-blue-800"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                  </svg>
-                  Back to Courses
-                </button>
-                <h2 className="text-xl font-semibold mt-2">{selectedCourse.name}</h2>
-                <p className="text-gray-600">{selectedCourse.description || "No description available"}</p>
-              </div>
-
-              <div className="space-y-6">
-                {videos
-                  .filter(video => selectedCourse.videos?.includes(video.id))
-                  .map((video) => (
-                    <div key={video.id} className="border p-4 rounded-lg shadow-sm">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h2 className="font-bold text-lg">{video.title}</h2>
-                          <p className="text-sm text-gray-600">
-                            {video.department} • Uploaded by: {video.educatorName}
-                          </p>
-                        </div>
-                        {userRole === "Employee" && 
-                          userProgress.completedVideos?.includes(video.id) && (
-                          <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">
-                            ✓ Completed
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="mb-3 relative">
-                        <video
-                          ref={el => videoRefs.current[video.id] = el}
-                          src={video.url}
-                          controls
-                          className="w-full max-w-2xl mx-auto rounded-lg"
-                          onTimeUpdate={(e) => {
-                            if (userRole === "Employee") {
-                              const videoElement = e.target;
-                              const progress = videoElement.currentTime / videoElement.duration;
-                              updateVideoProgress(video.id, progress);
-                            }
-                          }}
-                        />
-                        <button
-                          onClick={() => toggleFullscreen(video.id)}
-                          className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded"
-                          title="Toggle Fullscreen"
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path fillRule="evenodd" d="M5 9V7a1 1 0 011-1h2V4a1 1 0 011-1h2a1 1 0 011 1v2h2a1 1 0 011 1v2a1 1 0 01-1 1h-2v2a1 1 0 01-1 1H9a1 1 0 01-1-1v-2H6a1 1 0 01-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      <StarRating
-                        videoId={video.id}
-                        currentRating={video.ratings || {}}
-                      />
-
-                      {userRole === "Employee" && (
-                        <div className="mt-3">
-                          <div className="flex justify-between text-xs mb-1">
-                            <span>
-                              {Math.round(
-                                (userProgress.videoProgress?.[video.id] || 0) * 100
-                              )}% watched
-                            </span>
-                            {userProgress.completedVideos?.includes(video.id) && (
-                              <span className="text-green-600">Completed</span>
-                            )}
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full"
-                              style={{
-                                width: `${
-                                  (userProgress.videoProgress?.[video.id] || 0) * 100
-                                }%`,
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-
-                {selectedCourse.videos?.length === 0 && (
-                  <div className="text-center py-10">
-                    <p className="text-gray-500">No videos available in this course yet.</p>
-                    {userRole === "Educator" && (
-                      <button
-                        onClick={() => navigate("/dashboard/add-video")}  // Updated navigation path
-                        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-                      >
-                        Add Video to Course
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+          </>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
