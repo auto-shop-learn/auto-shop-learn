@@ -383,12 +383,12 @@ const Videos = () => {
 
   return (
     <>
-      <div className="logo mt-3 mb-6">
-        <img src={Logo} alt="Company Logo" width="300px" />
-      </div>
       <div className="flex">
         <Sidebar />
         <div className="container mx-auto p-6">
+      <div className="logo mt-3 mb-6">
+        <img src={Logo} alt="Company Logo" width="300px" />
+      </div>
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold">
               {selectedCourse ? selectedCourse.name : "Training Courses"}
