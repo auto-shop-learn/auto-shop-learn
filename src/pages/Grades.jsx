@@ -82,9 +82,12 @@ const Grades = () => {
   }
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
+      {/* Fixed Sidebar - now handled inside Sidebar component */}
       <Sidebar />
-      <div className="flex-1 p-8">
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto ml-0 p-8"> {/* ml-64 matches sidebar width */}
         <div className="mb-6">
           <img src={Logo} alt="Logo" className="h-12 mb-4" />
           <h1 className="text-2xl font-bold mb-4">Student Performance</h1>
@@ -165,7 +168,6 @@ const Grades = () => {
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   );

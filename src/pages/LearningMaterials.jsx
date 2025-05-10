@@ -1,4 +1,3 @@
-// src/pages/LearningMaterials.jsx
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
@@ -192,9 +191,12 @@ const LearningMaterials = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
+    <div className="flex h-screen overflow-hidden">
+      {/* Fixed Sidebar */}
       <Sidebar />
-      <div className="flex-1 p-6 md:p-8">
+      
+      {/* Scrollable Content Area */}
+      <div className="flex-1 overflow-y-auto ml-0 p-6 md:p-8 bg-gray-50">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center">
