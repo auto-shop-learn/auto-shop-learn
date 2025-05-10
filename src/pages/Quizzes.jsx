@@ -33,7 +33,8 @@ const Quizzes = () => {
     difficulty: "Medium",
     category: "General",
     passingScore: 70,
-    status: "Draft"
+    status: "Draft",
+    questionsPerQuiz: 10 // New field to track how many questions to select
   });
 
   const [questions, setQuestions] = useState([]);
@@ -94,10 +95,15 @@ const Quizzes = () => {
         ...doc.data() 
       }));
       
-      // Select 10 random questions
+      // Get the quiz to know how many questions to select
+      const quizDoc = await getDoc(doc(quizzesCollectionRef, quizId));
+      const quizData = quizDoc.data();
+      const questionsToSelect = quizData.questionsPerQuiz || 10;
+      
+      // Select random questions based on the quiz configuration
       const selectedQuestions = [...allQuestions]
         .sort(() => 0.5 - Math.random())
-        .slice(0, 10);
+        .slice(0, questionsToSelect);
       
       setQuizQuestions(selectedQuestions);
       setCurrentQuiz(quizList.find(q => q.id === quizId));
@@ -233,8 +239,8 @@ const Quizzes = () => {
   };
 
   const createQuiz = async () => {
-    if (questions.length < 10) {
-      alert("Minimum 10 questions required");
+    if (questions.length < 20) {
+      alert("Minimum 20 questions required for question pool");
       return;
     }
 
@@ -246,10 +252,11 @@ const Quizzes = () => {
         quizId: quizRef.id,
         createdBy: auth.currentUser.uid,
         createdAt: serverTimestamp(),
-        numQuestions: questions.length,
+        totalQuestions: questions.length, // Store total questions in pool
+        questionsPerQuiz: quizForm.questionsPerQuiz // Store how many to select per attempt
       });
 
-      // Add questions to subcollection
+      // Add all questions to subcollection (pool)
       const questionsBatch = questions.map((q, i) => {
         const qRef = doc(collection(db, "quizzes", quizRef.id, "questions"));
         return setDoc(qRef, {
@@ -292,7 +299,8 @@ const Quizzes = () => {
       difficulty: "Medium",
       category: "General",
       passingScore: 70,
-      status: "Draft"
+      status: "Draft",
+      questionsPerQuiz: 10
     });
     setQuestions([]);
     setCurrentQuestion({
@@ -343,7 +351,7 @@ const Quizzes = () => {
                 }`}>
                   {quiz.difficulty}
                 </span>
-                <span>{quiz.numQuestions} questions</span>
+                <span>{quiz.totalQuestions} questions in pool ({quiz.questionsPerQuiz || 10} per attempt)</span>
               </div>
             </div>
             <div className="p-4 flex justify-end gap-2">
@@ -555,6 +563,22 @@ const Quizzes = () => {
                     />
                   </div>
                   <div>
+                    <label className="block font-medium mb-1">Questions Per Attempt*</label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      className="w-full p-2 border rounded"
+                      value={quizForm.questionsPerQuiz}
+                      onChange={(e) => setQuizForm({
+                        ...quizForm, 
+                        questionsPerQuiz: parseInt(e.target.value) || 10
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
                     <label className="block font-medium mb-1">Status*</label>
                     <select
                       className="w-full p-2 border rounded"
@@ -573,10 +597,10 @@ const Quizzes = () => {
 
               <div className="border-t pt-4">
                 <h4 className="font-medium text-lg mb-4">
-                  Questions ({questions.length})
+                  Question Pool ({questions.length})
                   <span className="text-sm font-normal text-gray-600 ml-2">
-                    {questions.length < 10 ? 
-                      `(Minimum ${10 - questions.length} more needed)` : 
+                    {questions.length < 20 ? 
+                      `(Minimum ${20 - questions.length} more needed)` : 
                       "Ready to publish"}
                   </span>
                 </h4>
@@ -634,14 +658,14 @@ const Quizzes = () => {
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
                     disabled={!currentQuestion.text || currentQuestion.options.some(opt => !opt)}
                   >
-                    Add Question
+                    Add Question to Pool
                   </button>
                 </div>
 
                 {questions.length > 0 && (
                   <div className="border rounded-lg overflow-hidden">
-                    <div className="bg-gray-100 p-2 font-medium">Added Questions</div>
-                    <ul className="divide-y">
+                    <div className="bg-gray-100 p-2 font-medium">Question Pool</div>
+                    <ul className="divide-y max-h-60 overflow-y-auto">
                       {questions.map((q, i) => (
                         <li key={i} className="p-3 hover:bg-gray-50 flex justify-between items-center">
                           <div>
@@ -677,11 +701,11 @@ const Quizzes = () => {
               </button>
               <button
                 onClick={createQuiz}
-                disabled={questions.length < 10}
+                disabled={questions.length < 20}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
               >
-                {questions.length < 10 ? 
-                  `Add ${10 - questions.length} more questions` : 
+                {questions.length < 20 ? 
+                  `Add ${20 - questions.length} more questions to pool` : 
                   "Publish Quiz"}
               </button>
             </div>
