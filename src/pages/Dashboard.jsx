@@ -499,12 +499,6 @@ const Dashboard = () => {
             color="green" 
           />
           <StatCard 
-            title="Avg. Score" 
-            value={`${stats.averageScore}%`} 
-            icon="📊" 
-            color="purple" 
-          />
-          <StatCard 
             title="Certificates" 
             value={stats.certificatesEarned} 
             icon="🏆" 
