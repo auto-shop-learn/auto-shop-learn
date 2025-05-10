@@ -8,8 +8,10 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import DeleteIcon from "../assets/svg/deleteIcon.svg?react";
 import Logo from "../assets/images/logo2.png";
+import { useNavigate } from "react-router-dom";
 
 const Quizzes = () => {
+  const navigate = useNavigate();
   // State management
   const [quizList, setQuizList] = useState([]);
   const [showQuizModal, setShowQuizModal] = useState(false);
@@ -322,7 +324,18 @@ const Quizzes = () => {
     <div className="container mx-auto p-4">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <img src={Logo} alt="Company Logo" className="h-12" />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => navigate(-1)}
+            className="px-4 py-2 bg-red-200 text-red-700 rounded hover:bg-gray-300 flex items-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+            </svg>
+            Back
+          </button>
+          <img src={Logo} alt="Company Logo" className="h-12" />
+        </div>
         <h1 className="text-2xl font-bold">
           {userRole === "Educator" ? "Quiz Management" : "Available Quizzes"}
         </h1>
@@ -345,7 +358,7 @@ const Quizzes = () => {
               <p className="text-sm text-gray-600">{quiz.description}</p>
               <div className="mt-2 flex justify-between text-xs">
                 <span className={`px-2 py-1 rounded ${
-                  quiz.difficulty === "Easy" ? "bg-green-100 text-green-800" :
+                  quiz.difficulty === "Easy" ? "bg-blue-100 text-blue-800" :
                   quiz.difficulty === "Medium" ? "bg-yellow-100 text-yellow-800" :
                   "bg-red-100 text-red-800"
                 }`}>
@@ -358,7 +371,7 @@ const Quizzes = () => {
               {userRole === "Employee" ? (
                 <button
                   onClick={() => startQuiz(quiz.id)}
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                   Start Quiz
                 </button>
@@ -399,7 +412,7 @@ const Quizzes = () => {
                 <div className="text-center space-y-4">
                   <h4 className="text-xl font-bold">Quiz Results</h4>
                   <div className={`text-4xl font-bold ${
-                    score.passed ? "text-green-600" : "text-red-600"
+                    score.passed ? "text-blue-600" : "text-red-600"
                   }`}>
                     {score.percentage}% {score.passed ? "✓" : "✗"}
                   </div>
@@ -407,7 +420,7 @@ const Quizzes = () => {
                     You answered {score.correct} of {score.total} questions correctly
                   </p>
                   {score.passed && (
-                    <p className="text-green-600 font-medium">
+                    <p className="text-blue-600 font-medium">
                       Certificate has been awarded!
                     </p>
                   )}
@@ -471,7 +484,7 @@ const Quizzes = () => {
                   <button
                     onClick={submitQuiz}
                     disabled={!userAnswers[quizQuestions[currentQuestionIndex].id]}
-                    className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
                   >
                     Submit Quiz
                   </button>
@@ -702,7 +715,7 @@ const Quizzes = () => {
               <button
                 onClick={createQuiz}
                 disabled={questions.length < 20}
-                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
               >
                 {questions.length < 20 ? 
                   `Add ${20 - questions.length} more questions to pool` : 

@@ -14,6 +14,8 @@ import Videos from "./pages/Videos";
 import Quiz from "./pages/Quizzes";
 import Certificates from "./pages/Certificates";
 import LearningMaterials from "./pages/LearningMaterials";
+import Grades from "./pages/Grades";
+import AddGrade from "./pages/AddGrade";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -52,7 +54,7 @@ function App() {
         />
         <Route 
           path="/sign-in" 
-          element={!currentUser ? <SignIn /> : <Navigate to="/dashboard" replace />} 
+          element={!currentUser ? <SignIn /> : <Navigate to="/sign-in" replace />} 
         />
 
         {/* Protected Routes */}
@@ -75,6 +77,14 @@ function App() {
         <Route 
           path="/materials" 
           element={currentUser ? <LearningMaterials /> : <Navigate to="/sign-in" replace />} 
+        />
+        <Route 
+          path="/grades" 
+          element={currentUser ? <Grades /> : <Navigate to="/sign-in" replace />} 
+        />
+        <Route 
+          path="/add-grade" 
+          element={currentUser ? <AddGrade /> : <Navigate to="/sign-in" replace />} 
         />
 
         {/* Root Route */}
