@@ -3,6 +3,7 @@ import { useNavigate, Link, Routes, Route } from "react-router-dom";
 import { db, auth } from "../../config/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Logo from "../../assets/images/logo2.png";
+import SettingsGif from "../../assets/images/settings3.gif";
 
 // Import settings components
 import ProfileSettings from "./ProfileSettings";
@@ -45,7 +46,7 @@ const Settings = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-white">
       {/* Settings Sidebar */}
       <div className="w-64 bg-white shadow-lg">
         <div className="p-4">
@@ -107,6 +108,7 @@ const Settings = () => {
                 <p className="text-gray-600">
                   Please select a setting category from the sidebar to get started.
                 </p>
+                <img src={SettingsGif} alt="Settings" className="mx-auto mt-20 mb-6 w-20" />
               </div>
             }
           />
