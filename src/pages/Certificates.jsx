@@ -45,14 +45,12 @@ const Certificates = () => {
   }
 
   return (
-    <>
-      <div className="logo my-4">
-        <img src={Logo} alt="Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <div className="flex justify-between items-center mb-6">
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">Certificates</h1>
             <button
               onClick={() => navigate("/add-cert")}
@@ -61,49 +59,49 @@ const Certificates = () => {
               + Add Certificate
             </button>
           </div>
+        </div>
 
-          <div className="space-y-6">
-            {certs.map((c) => (
-              <div
-                key={c.id}
-                className="border p-4 rounded-lg shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="font-medium">{c.title}</h2>
-                  <label className="inline-flex items-center">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                      checked={c.downloaded}
-                      onChange={(e) =>
-                        toggleDownloaded(c.id, e.target.checked)
-                      }
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Downloaded
-                    </span>
-                  </label>
-                </div>
-                <p className="text-sm text-gray-700 mb-2">
-                  {c.description}
-                </p>
-                <a
-                  href={c.url}
-                  download
-                  className="text-blue-600 hover:underline"
-                >
-                  Download PDF
-                </a>
+        <div className="space-y-6">
+          {certs.map((c) => (
+            <div
+              key={c.id}
+              className="border p-4 rounded-lg shadow-sm"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="font-medium">{c.title}</h2>
+                <label className="inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                    checked={c.downloaded}
+                    onChange={(e) =>
+                      toggleDownloaded(c.id, e.target.checked)
+                    }
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    Downloaded
+                  </span>
+                </label>
               </div>
-            ))}
+              <p className="text-sm text-gray-700 mb-2">
+                {c.description}
+              </p>
+              <a
+                href={c.url}
+                download
+                className="text-blue-600 hover:underline"
+              >
+                Download PDF
+              </a>
+            </div>
+          ))}
 
-            {certs.length === 0 && (
-              <p className="text-gray-600">No certificates yet.</p>
-            )}
-          </div>
+          {certs.length === 0 && (
+            <p className="text-gray-600">No certificates yet.</p>
+          )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

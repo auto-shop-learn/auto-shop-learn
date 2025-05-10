@@ -13,6 +13,7 @@ import {
 } from "firebase/firestore";
 import { Navigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar"; // Import the Sidebar component
+import Logo from "../assets/images/logo2.png"; // Import the Logo image
 
 const Dashboard = () => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -224,7 +225,10 @@ const Dashboard = () => {
     return (
       <DashboardLayout>
         <div className="container mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-6">Educator Dashboard</h1>
+          <div className="mb-6">
+            <img src={Logo} alt="Logo" className="h-12 mb-4" />
+            <h1 className="text-2xl font-semibold mb-4">Educator Dashboard</h1>
+          </div>
           
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
@@ -319,7 +323,10 @@ const Dashboard = () => {
     return (
       <DashboardLayout>
         <div className="container mx-auto p-4">
-          <h1 className="text-2xl font-bold mb-6">My Learning Dashboard</h1>
+          <div className="mb-6">
+            <img src={Logo} alt="Logo" className="h-12 mb-4" />
+            <h1 className="text-2xl font-semibold mb-4">My Learning Dashboard</h1>
+          </div>
           
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

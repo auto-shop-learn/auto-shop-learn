@@ -106,14 +106,12 @@ const Videos = () => {
   }
 
   return (
-    <>
-      <div className="logo mt-3 mb-6">
-        <img src={Logo} alt="Your Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <div className="flex justify-between items-center mb-6">
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">All Training Videos</h1>
             <button
               onClick={() => navigate("/add-video")}
@@ -122,46 +120,46 @@ const Videos = () => {
               + Add Video
             </button>
           </div>
+        </div>
 
-          <div className="space-y-8">
-            {videos.map((v) => (
-              <div key={v.id} className="border p-4 rounded-lg shadow-sm">
-                <div className="flex justify-between mb-2">
-                  <h2 className="font-medium">{v.title}</h2>
-                  <div className="flex items-center">
-                    <label className="inline-flex items-center cursor-pointer mr-4">
-                      <input
-                        type="checkbox"
-                        className="form-checkbox h-5 w-5 text-blue-600"
-                        checked={v.completed}
-                        onChange={(e) =>
-                          handleCompletionToggle(v.id, e.target.checked)
-                        }
-                      />
-                      <span className="ml-2 text-sm text-gray-700">
-                        Completed
-                      </span>
-                    </label>
-                  </div>
-                </div>
-                <video src={v.url} controls className="w-full max-w-xl" />
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-3">
-                  <StarRating videoId={v.id} currentRating={v.rating} />
-                  {v.completed && (
-                    <span className="mt-2 md:mt-0 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                      ✓ Completed
+        <div className="space-y-8">
+          {videos.map((v) => (
+            <div key={v.id} className="border p-4 rounded-lg shadow-sm">
+              <div className="flex justify-between mb-2">
+                <h2 className="font-medium">{v.title}</h2>
+                <div className="flex items-center">
+                  <label className="inline-flex items-center cursor-pointer mr-4">
+                    <input
+                      type="checkbox"
+                      className="form-checkbox h-5 w-5 text-blue-600"
+                      checked={v.completed}
+                      onChange={(e) =>
+                        handleCompletionToggle(v.id, e.target.checked)
+                      }
+                    />
+                    <span className="ml-2 text-sm text-gray-700">
+                      Completed
                     </span>
-                  )}
+                  </label>
                 </div>
               </div>
-            ))}
-            {videos.length === 0 && (
-              <p className="text-gray-600">No videos uploaded yet.</p>
-            )}
-          </div>
+              <video src={v.url} controls className="w-full max-w-xl" />
+              <div className="flex flex-col md:flex-row md:justify-between md:items-center mt-3">
+                <StarRating videoId={v.id} currentRating={v.rating} />
+                {v.completed && (
+                  <span className="mt-2 md:mt-0 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                    ✓ Completed
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+          {videos.length === 0 && (
+            <p className="text-gray-600">No videos uploaded yet.</p>
+          )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

@@ -121,127 +121,125 @@ const AddAnimal = () => {
   }
 
   return (
-    <>
-      <div className="logo mt-3 mb-6">
-        <img src={Logo} alt="Your Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        {/* <Auth /> */}
-        <div>
-          <div className="ml-10 mt-10">
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Animal type"
-                value={newAnimalType}
-                onChange={(e) => setNewAnimalType(e.target.value)}
-              />
-              {errors.newAnimalType && (
-                <div className="text-red-500">{errors.newAnimalType}</div>
-              )}
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Color"
-                type="text"
-                value={newAnimalColor}
-                onChange={(e) => setNewAnimalColor(e.target.value)}
-              />
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Breed"
-                value={newAnimalBreed}
-                onChange={(e) => setNewAnimalBreed(e.target.value)}
-              />
-              {errors.newAnimalBreed && (
-                <div className="text-red-500">{errors.newAnimalBreed}</div>
-              )}
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Species"
-                value={newAnimalSpecies}
-                onChange={(e) => setNewAnimalSpecies(e.target.value)}
-              />
-              {errors.newAnimalSpecies && (
-                <div className="text-red-500">{errors.newAnimalSpecies}</div>
-              )}
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Age"
-                value={newAnimalAge}
-                onChange={(e) => setNewAnimalAge(e.target.value)}
-              />
-              {errors.newAnimalAge && (
-                <div className="text-red-500">{errors.newAnimalAge}</div>
-              )}
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Location"
-                type="text"
-                value={newAnimalLocation}
-                onChange={(e) => setNewAnimalLocation(e.target.value)}
-              />
-            </div>
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Gender"
-                type="text"
-                value={newAnimalGender}
-                onChange={(e) => setNewAnimalGender(e.target.value)}
-              />
-              {errors.newAnimalGender && (
-                <div className="text-red-500">{errors.newAnimalGender}</div>
-              )}
-            </div>
-
-            {/* <div className="mb-2">
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <h1 className="text-2xl font-semibold">Add New Grade</h1>
+        </div>
+        <div className="ml-10">
+          <div className="mb-2">
             <input
               className="p-2 border border-gray-300 rounded"
-              placeholder="Vaccination Status"
-              type="text"
-              value={newAnimalVaccinationStatus}
-              onChange={(e) => setNewAnimalVaccinationStatus(e.target.value)}
+              placeholder="Animal type"
+              value={newAnimalType}
+              onChange={(e) => setNewAnimalType(e.target.value)}
             />
-          </div> */}
-            <div className="mb-2">
-              <input
-                className="p-2 border border-gray-300 rounded"
-                placeholder="Health Status"
-                type="text"
-                value={newAnimalHealthStatus}
-                onChange={(e) => setNewAnimalHealthStatus(e.target.value)}
-              />
-            </div>
-            {/* <div className="mb-2">
-            <input
-              className="p-2 border border-gray-300 rounded"
-              placeholder="Date of Birth"
-              type="date"
-              value={newAnimalDob}
-              onChange={(e) => setNewAnimalDob(e.target.value)}
-            />
-          </div> */}
-            <button
-              className="p-2 bg-blue-700 text-white rounded hover-bg-blue-800"
-              onClick={onSubmitAnimal}
-            >
-              Add Animal
-            </button>
+            {errors.newAnimalType && (
+              <div className="text-red-500">{errors.newAnimalType}</div>
+            )}
           </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Color"
+              type="text"
+              value={newAnimalColor}
+              onChange={(e) => setNewAnimalColor(e.target.value)}
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Breed"
+              value={newAnimalBreed}
+              onChange={(e) => setNewAnimalBreed(e.target.value)}
+            />
+            {errors.newAnimalBreed && (
+              <div className="text-red-500">{errors.newAnimalBreed}</div>
+            )}
+          </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Species"
+              value={newAnimalSpecies}
+              onChange={(e) => setNewAnimalSpecies(e.target.value)}
+            />
+            {errors.newAnimalSpecies && (
+              <div className="text-red-500">{errors.newAnimalSpecies}</div>
+            )}
+          </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Age"
+              value={newAnimalAge}
+              onChange={(e) => setNewAnimalAge(e.target.value)}
+            />
+            {errors.newAnimalAge && (
+              <div className="text-red-500">{errors.newAnimalAge}</div>
+            )}
+          </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Location"
+              type="text"
+              value={newAnimalLocation}
+              onChange={(e) => setNewAnimalLocation(e.target.value)}
+            />
+          </div>
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Gender"
+              type="text"
+              value={newAnimalGender}
+              onChange={(e) => setNewAnimalGender(e.target.value)}
+            />
+            {errors.newAnimalGender && (
+              <div className="text-red-500">{errors.newAnimalGender}</div>
+            )}
+          </div>
+
+          {/* <div className="mb-2">
+          <input
+            className="p-2 border border-gray-300 rounded"
+            placeholder="Vaccination Status"
+            type="text"
+            value={newAnimalVaccinationStatus}
+            onChange={(e) => setNewAnimalVaccinationStatus(e.target.value)}
+          />
+        </div> */}
+          <div className="mb-2">
+            <input
+              className="p-2 border border-gray-300 rounded"
+              placeholder="Health Status"
+              type="text"
+              value={newAnimalHealthStatus}
+              onChange={(e) => setNewAnimalHealthStatus(e.target.value)}
+            />
+          </div>
+          {/* <div className="mb-2">
+          <input
+            className="p-2 border border-gray-300 rounded"
+            placeholder="Date of Birth"
+            type="date"
+            value={newAnimalDob}
+            onChange={(e) => setNewAnimalDob(e.target.value)}
+          />
+        </div> */}
+          <button
+            className="p-2 bg-blue-700 text-white rounded hover-bg-blue-800"
+            onClick={onSubmitAnimal}
+          >
+            Add Animal
+          </button>
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

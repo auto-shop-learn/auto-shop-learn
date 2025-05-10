@@ -160,103 +160,98 @@ const AddCert = () => {
   }
 
   return (
-    <>
-      <div className="logo my-4">
-        <img src={Logo} alt="Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <h1 className="text-2xl font-semibold mb-4">
-            Generate Certificate
-          </h1>
-          
-          {/* Certificate Preview */}
-          <div className="mb-8 p-4 border rounded">
-            <h2 className="font-semibold mb-2">Certificate Preview</h2>
-            <div 
-              ref={certificateRef} 
-              className="certificate-container bg-white border-8 border-blue-800 p-8 text-center"
-              style={{ width: '100%', height: 'auto', aspectRatio: '1.414/1' }}
-            >
-              <div className="border-4 border-blue-700 p-6 h-full flex flex-col justify-between">
-                <div className="cert-header mb-4">
-                  <h1 className="text-3xl font-bold text-blue-900">CERTIFICATE OF ACHIEVEMENT</h1>
-                  <div className="text-lg text-blue-700 mt-2">Training & Development Program</div>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <h1 className="text-2xl font-semibold mb-4">Generate Certificate</h1>
+        </div>
+        {/* Certificate Preview */}
+        <div className="mb-8 p-4 border rounded">
+          <h2 className="font-semibold mb-2">Certificate Preview</h2>
+          <div 
+            ref={certificateRef} 
+            className="certificate-container bg-white border-8 border-blue-800 p-8 text-center"
+            style={{ width: '100%', height: 'auto', aspectRatio: '1.414/1' }}
+          >
+            <div className="border-4 border-blue-700 p-6 h-full flex flex-col justify-between">
+              <div className="cert-header mb-4">
+                <h1 className="text-3xl font-bold text-blue-900">CERTIFICATE OF ACHIEVEMENT</h1>
+                <div className="text-lg text-blue-700 mt-2">Training & Development Program</div>
+              </div>
+              
+              <div className="cert-body flex-grow flex flex-col justify-center">
+                <div className="text-lg mb-2">This certifies that</div>
+                <div className="name text-3xl font-bold text-blue-800 my-3">{userName || "Employee Name"}</div>
+                <div className="text-lg mb-4">has successfully completed the required training for</div>
+                <div className="text-2xl font-semibold my-3">{title || "Training Certificate"}</div>
+                <div className="text-md mt-3">Issued on {certDate}</div>
+              </div>
+              
+              <div className="cert-footer mt-6 flex justify-between items-end">
+                <div className="signature text-left">
+                  <div className="border-t border-black inline-block w-32"></div>
+                  <div className="text-sm">Training Director</div>
                 </div>
-                
-                <div className="cert-body flex-grow flex flex-col justify-center">
-                  <div className="text-lg mb-2">This certifies that</div>
-                  <div className="name text-3xl font-bold text-blue-800 my-3">{userName || "Employee Name"}</div>
-                  <div className="text-lg mb-4">has successfully completed the required training for</div>
-                  <div className="text-2xl font-semibold my-3">{title || "Training Certificate"}</div>
-                  <div className="text-md mt-3">Issued on {certDate}</div>
+                <div className="company-seal flex items-center justify-center">
+                  <div className="border-2 border-blue-700 rounded-full p-2 w-24 h-24 flex items-center justify-center">
+                    <div className="text-xs text-blue-800">OFFICIAL SEAL</div>
+                  </div>
                 </div>
-                
-                <div className="cert-footer mt-6 flex justify-between items-end">
-                  <div className="signature text-left">
-                    <div className="border-t border-black inline-block w-32"></div>
-                    <div className="text-sm">Training Director</div>
-                  </div>
-                  <div className="company-seal flex items-center justify-center">
-                    <div className="border-2 border-blue-700 rounded-full p-2 w-24 h-24 flex items-center justify-center">
-                      <div className="text-xs text-blue-800">OFFICIAL SEAL</div>
-                    </div>
-                  </div>
-                  <div className="signature text-right">
-                    <div className="border-t border-black inline-block w-32"></div>
-                    <div className="text-sm">CEO</div>
-                  </div>
+                <div className="signature text-right">
+                  <div className="border-t border-black inline-block w-32"></div>
+                  <div className="text-sm">CEO</div>
                 </div>
               </div>
             </div>
           </div>
-          
-          {/* Form */}
-          <form onSubmit={saveCertificate} className="space-y-4">
-            <div>
-              <label className="block mb-1 font-medium">Certificate Title</label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">Description</label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="w-full p-2 border rounded"
-              />
-            </div>
-            
-            {progress > 0 && (
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full" 
-                  style={{ width: `${progress}%` }}
-                ></div>
-                <div className="text-sm text-blue-600 mt-1">
-                  Generating: {progress}%
-                </div>
-              </div>
-            )}
-            
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
-            >
-              {loading ? "Generating..." : "Generate Certificate"}
-            </button>
-          </form>
         </div>
+        
+        {/* Form */}
+        <form onSubmit={saveCertificate} className="space-y-4">
+          <div>
+            <label className="block mb-1 font-medium">Certificate Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          
+          {progress > 0 && (
+            <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div 
+                className="bg-blue-600 h-2.5 rounded-full" 
+                style={{ width: `${progress}%` }}
+              ></div>
+              <div className="text-sm text-blue-600 mt-1">
+                Generating: {progress}%
+              </div>
+            </div>
+          )}
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+          >
+            {loading ? "Generating..." : "Generate Certificate"}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   )
 }
 

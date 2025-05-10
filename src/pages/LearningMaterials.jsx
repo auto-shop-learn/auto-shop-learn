@@ -87,14 +87,12 @@ const LearningMaterials = () => {
   )
 
   return (
-    <>
-      <div className="logo my-4">
-        <img src={Logo} alt="Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <div className="flex justify-between items-center mb-6">
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <div className="flex justify-between items-center">
             <h1 className="text-2xl font-semibold">Learning Materials</h1>
             <button
               onClick={() => navigate("/add-material")}
@@ -103,60 +101,60 @@ const LearningMaterials = () => {
               + Add Material
             </button>
           </div>
+        </div>
 
-          <div className="space-y-8">
-            {materials.map((m) => (
-              <div
-                key={m.id}
-                className="border p-4 rounded-lg shadow-sm"
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <h2 className="font-medium">{m.title}</h2>
-                  <label className="inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="form-checkbox h-5 w-5 text-blue-600"
-                      checked={m.read}
-                      onChange={(e) =>
-                        handleReadToggle(m.id, e.target.checked)
-                      }
-                    />
-                    <span className="ml-2 text-sm text-gray-700">
-                      Read
-                    </span>
-                  </label>
-                </div>
-
-                <p className="text-sm text-gray-700 mb-2">
-                  {m.description}
-                </p>
-
-                <a
-                  href={m.url}
-                  download
-                  className="inline-block text-blue-600 hover:underline mb-3"
-                >
-                  Download {m.fileType?.toUpperCase()}
-                </a>
-
-                <StarRating id={m.id} rating={m.rating} />
-                {m.read && (
-                  <span className="mt-2 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                    ✓ Read
+        <div className="space-y-8">
+          {materials.map((m) => (
+            <div
+              key={m.id}
+              className="border p-4 rounded-lg shadow-sm"
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="font-medium">{m.title}</h2>
+                <label className="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="form-checkbox h-5 w-5 text-blue-600"
+                    checked={m.read}
+                    onChange={(e) =>
+                      handleReadToggle(m.id, e.target.checked)
+                    }
+                  />
+                  <span className="ml-2 text-sm text-gray-700">
+                    Read
                   </span>
-                )}
+                </label>
               </div>
-            ))}
 
-            {materials.length === 0 && (
-              <p className="text-gray-600">
-                No materials uploaded yet.
+              <p className="text-sm text-gray-700 mb-2">
+                {m.description}
               </p>
-            )}
-          </div>
+
+              <a
+                href={m.url}
+                download
+                className="inline-block text-blue-600 hover:underline mb-3"
+              >
+                Download {m.fileType?.toUpperCase()}
+              </a>
+
+              <StarRating id={m.id} rating={m.rating} />
+              {m.read && (
+                <span className="mt-2 text-sm bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                  ✓ Read
+                </span>
+              )}
+            </div>
+          ))}
+
+          {materials.length === 0 && (
+            <p className="text-gray-600">
+              No materials uploaded yet.
+            </p>
+          )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

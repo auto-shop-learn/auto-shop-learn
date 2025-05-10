@@ -90,66 +90,62 @@ const AddMaterial = () => {
   }
 
   return (
-    <>
-      <div className="logo my-4">
-        <img src={Logo} alt="Logo" width="300px" />
-      </div>
-      <div className="flex">
-        <Sidebar />
-        <div className="container mx-auto p-6">
-          <h1 className="text-2xl font-semibold mb-4">
-            Upload Learning Material
-          </h1>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <label className="block mb-1 font-medium">Title</label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">
-                Description
-              </label>
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-            <div>
-              <label className="block mb-1 font-medium">
-                Select File
-              </label>
-              <input
-                type="file"
-                accept=".pdf,.txt,.docx"
-                onChange={handleFileChange}
-                required
-                className="block"
-              />
-            </div>
-            {progress > 0 && (
-              <div className="text-sm text-blue-600">
-                Uploading: {progress}%
-              </div>
-            )}
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
-            >
-              {loading ? "Uploading…" : "Upload Material"}
-            </button>
-          </form>
+    <div className="flex">
+      <Sidebar />
+      <div className="flex-1 p-8">
+        <div className="mb-6">
+          <img src={Logo} alt="Logo" className="h-12 mb-4" />
+          <h1 className="text-2xl font-semibold mb-4">Upload Learning Material</h1>
         </div>
+        <form onSubmit={onSubmit} className="space-y-4">
+          <div>
+            <label className="block mb-1 font-medium">Title</label>
+            <input
+              type="text"
+              required
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-2 border rounded"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">
+              Select File
+            </label>
+            <input
+              type="file"
+              accept=".pdf,.txt,.docx"
+              onChange={handleFileChange}
+              required
+              className="block"
+            />
+          </div>
+          {progress > 0 && (
+            <div className="text-sm text-blue-600">
+              Uploading: {progress}%
+            </div>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-600"
+          >
+            {loading ? "Uploading…" : "Upload Material"}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   )
 }
 

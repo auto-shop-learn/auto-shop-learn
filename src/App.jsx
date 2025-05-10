@@ -16,6 +16,7 @@ import Certificates from "./pages/Certificates";
 import LearningMaterials from "./pages/LearningMaterials";
 import Grades from "./pages/Grades";
 import AddGrade from "./pages/AddGrade";
+import Settings from "./pages/Settings";
 
 function App() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -85,6 +86,10 @@ function App() {
         <Route 
           path="/add-grade" 
           element={currentUser ? <AddGrade /> : <Navigate to="/sign-in" replace />} 
+        />
+        <Route 
+          path="/settings/*" 
+          element={currentUser ? <Settings /> : <Navigate to="/sign-in" replace />} 
         />
 
         {/* Root Route */}
