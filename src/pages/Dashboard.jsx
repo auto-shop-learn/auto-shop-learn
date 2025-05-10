@@ -380,6 +380,9 @@ const Dashboard = () => {
             color="green" 
           />
           <StatCard 
+             
+          />
+          <StatCard 
             title="Certificates Issued" 
             value={stats.certificatesEarned} 
             icon="🏆" 
